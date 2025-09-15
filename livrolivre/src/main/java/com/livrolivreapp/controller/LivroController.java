@@ -1,12 +1,11 @@
-package livrolivre.src.main.java.com.livrolivre.controller;
+package com.livrolivreapp.controller;
 
-import com.livrolivre.model.Livro;
-import com.livrolivre.service.LivroService;
+import com.livrolivreapp.model.Livro;
+import com.livrolivreapp.service.LivroService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-        import java.util.List;
 
 @RestController
 @RequestMapping("/api/livros")

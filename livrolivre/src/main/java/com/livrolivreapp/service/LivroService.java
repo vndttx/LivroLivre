@@ -1,7 +1,7 @@
-package livrolivre.src.main.java.com.livrolivre.service;
+package com.livrolivreapp.service;
 
-import com.livrolivre.model.Livro;
-import com.livrolivre.repository.LivroRepository;
+import com.livrolivreapp.model.Livro;
+import com.livrolivreapp.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

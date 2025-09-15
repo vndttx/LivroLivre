@@ -1,7 +1,7 @@
-package livrolivre.src.main.java.com.livrolivre.model;
+package com.livrolivreapp.model;
 
-import javax.persistence.*;
-        import java.util.Date;
+import jakarta.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "emprestimos")

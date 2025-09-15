@@ -1,6 +1,6 @@
-package livrolivre.src.main.java.com.livrolivre.repository;
+package com.livrolivreapp.repository;
 
-import com.livrolivre.model.Usuario;
+import com.livrolivreapp.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

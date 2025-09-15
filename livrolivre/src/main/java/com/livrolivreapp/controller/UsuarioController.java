@@ -1,7 +1,7 @@
-package livrolivre.src.main.java.com.livrolivre.controller;
+package com.livrolivreapp.controller;
 
-import com.livrolivre.model.Usuario;
-import com.livrolivre.service.UsuarioService;
+import com.livrolivreapp.model.Usuario;
+import com.livrolivreapp.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,6 @@
-package livrolivre.src.main.java.com.livrolivre.model;
+package com.livrolivreapp.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "usuarios")

@@ -1,8 +1,9 @@
-package livrolivre.src.main.java.com.livrolivre.repository;
+package com.livrolivreapp.repository;
 
-import com.livrolivre.model.Emprestimo;
+import com.livrolivreapp.model.Emprestimo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 
 @Repository
 public interface EmprestimoRepository extends JpaRepository<Emprestimo, Long> {

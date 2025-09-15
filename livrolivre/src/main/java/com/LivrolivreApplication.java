@@ -1,4 +1,4 @@
-package livrolivre.src.main.java.com.livrolivre;
+package com;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
