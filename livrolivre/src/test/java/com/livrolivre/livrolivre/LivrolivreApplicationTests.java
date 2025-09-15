@@ -1,0 +1,13 @@
+package com.livrolivre.livrolivre;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class LivrolivreApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
