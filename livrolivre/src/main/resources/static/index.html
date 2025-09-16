@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Livros</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Bem-vindo ao LivroLivre</h1>
+    <div class="opcoes-carrinho">
+        <a href="cadastroLivro.html" class="btn">Cadastrar Livro</a>
+        <a href="carrinho.html" class="btn">Ver carrinho (<span id="contador-carrinho">0</span>)</a>
+        <button id="logout-btn" class="btn">Sair</button>
+    </div>
+
+    <h2>Livros disponíveis</h2>
+    <table id="livros-tabela">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Gênero</th>
+            <th>Estoque</th>
+            <th>Ação</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script src="js/catalogo.js"></script>
+</body>
+</html>

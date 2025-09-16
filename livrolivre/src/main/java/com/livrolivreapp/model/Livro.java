@@ -12,12 +12,15 @@ public class Livro {
 
     private String titulo;
     private String autor;
-    private String isbn;
-    private String sinopse;
-    private String status;
+    private String genero;
+    private String sinopse; // Adicione esta linha
+    private String status;  // Adicione esta linha
+    private int estoque;
 
-    // Getters e Setters
+    public Livro() {
+    }
 
+    // Getters e Setters para todos os campos
     public Long getId() {
         return id;
     }
@@ -42,12 +45,12 @@ public class Livro {
         this.autor = autor;
     }
 
-    public String getIsbn() {
-        return isbn;
+    public String getGenero() {
+        return genero;
     }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     public String getSinopse() {
@@ -64,5 +67,13 @@ public class Livro {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getEstoque() {
+        return estoque;
+    }
+
+    public void setEstoque(int estoque) {
+        this.estoque = estoque;
     }
 }

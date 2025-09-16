@@ -29,4 +29,21 @@ public class LivroService {
     public void deletar(Long id) {
         livroRepository.deleteById(id);
     }
+
+    public Optional<Livro> decrementarEstoque(Long id) {
+        return livroRepository.findById(id).map(livro -> {
+            if (livro.getEstoque() > 0) {
+                livro.setEstoque(livro.getEstoque() - 1);
+                return livroRepository.save(livro);
+            }
+            return null;
+        });
+    }
+
+    public Optional<Livro> incrementarEstoque(Long id) {
+        return livroRepository.findById(id).map(livro -> {
+            livro.setEstoque(livro.getEstoque() + 1);
+            return livroRepository.save(livro);
+        });
+    }
 }

@@ -15,18 +15,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
-    public List<Usuario> listar() {
-        return usuarioService.listarTodos();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
-        return usuarioService.buscarPorId(id)
-                .map(usuario -> ResponseEntity.ok().body(usuario))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping
     public Usuario adicionar(@RequestBody Usuario usuario) {
         return usuarioService.salvar(usuario);

@@ -1,10 +1,8 @@
 package com.livrolivreapp.model;
 
 import jakarta.persistence.*;
-import java.util.Date;
 
 @Entity
-@Table(name = "emprestimos")
 public class Emprestimo {
 
     @Id
@@ -12,33 +10,22 @@ public class Emprestimo {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "livro_id")
-    private Livro livro;
-
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    private Date dataEmprestimo;
-    private Date dataDevolucaoPrevista;
-    private Date dataDevolucaoReal;
+    @ManyToOne
+    @JoinColumn(name = "livro_id", nullable = false)
+    private Livro livro;
+
+    private int quantidade;
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Livro getLivro() {
-        return livro;
-    }
-
-    public void setLivro(Livro livro) {
-        this.livro = livro;
     }
 
     public Usuario getUsuario() {
@@ -49,27 +36,19 @@ public class Emprestimo {
         this.usuario = usuario;
     }
 
-    public Date getDataEmprestimo() {
-        return dataEmprestimo;
+    public Livro getLivro() {
+        return livro;
     }
 
-    public void setDataEmprestimo(Date dataEmprestimo) {
-        this.dataEmprestimo = dataEmprestimo;
+    public void setLivro(Livro livro) {
+        this.livro = livro;
     }
 
-    public Date getDataDevolucaoPrevista() {
-        return dataDevolucaoPrevista;
+    public int getQuantidade() {
+        return quantidade;
     }
 
-    public void setDataDevolucaoPrevista(Date dataDevolucaoPrevista) {
-        this.dataDevolucaoPrevista = dataDevolucaoPrevista;
-    }
-
-    public Date getDataDevolucaoReal() {
-        return dataDevolucaoReal;
-    }
-
-    public void setDataDevolucaoReal(Date dataDevolucaoReal) {
-        this.dataDevolucaoReal = dataDevolucaoReal;
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
     }
 }
