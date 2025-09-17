@@ -1,7 +1,7 @@
-package com.livrolivreapp.service;
+package com.livrolivre.service;
 
-import com.livrolivreapp.model.Livro;
-import com.livrolivreapp.repository.LivroRepository;
+import com.livrolivre.model.Livro;
+import com.livrolivre.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +40,9 @@ public class LivroService {
         });
     }
 
-    public Optional<Livro> incrementarEstoque(Long id) {
+    public Optional<Livro> incrementarEstoque(Long id, int quantidade) {
         return livroRepository.findById(id).map(livro -> {
-            livro.setEstoque(livro.getEstoque() + 1);
+            livro.setEstoque(livro.getEstoque() + quantidade);
             return livroRepository.save(livro);
         });
     }

@@ -1,13 +1,22 @@
-body {
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
-    color: #333;
-    margin: 40px;
+:root {
+  --cor-principal: #EFEFEF;
+  --cor-secundaria: #020D19;
+  --cor-texto: var(--cor-secundaria);
+  --cor-fundo: var(--cor-principal);
+
+  --cor-fundo-form: #fff;
+  --cor-borda-form: #ccc;
 }
 
-h1 {
-    color: #0056b3;
-    text-align: center;
+body {
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: Arial, sans-serif;
+    margin: 0; /* Removendo a margem do corpo para um alinhamento perfeito */
+}
+
+h1, h2, h3 {
+  color: var(--cor-secundaria);
 }
 
 p {
@@ -23,40 +32,172 @@ p {
 }
 
 .login-form {
-    background-color: #fff;
-    padding: 20px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    background-color: var(--cor-fundo-form);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 320px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-form:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
 
 .login-form label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     font-weight: bold;
 }
 
 .login-form input {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 24px;
+    border: 1px solid var(--cor-borda-form);
+    border-radius: 6px;
     box-sizing: border-box;
+    color: var(--cor-texto);
 }
 
 .login-form button {
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
+    padding: 12px;
+    background-color: var(--cor-secundaria);
+    color: var(--cor-principal);
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .login-form button:hover {
-    background-color: #0056b3;
+    background-color: #121d2b;
+    transform: scale(1.02);
 }
 
+.botao-destaque {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-principal);
+  border: 1px solid var(--cor-secundaria);
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.botao-destaque:hover {
+  background-color: transparent;
+  color: var(--cor-secundaria);
+}
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.card-livro {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-livro:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-livro img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.card-livro h3 {
+  margin-top: 10px;
+  color: var(--cor-secundaria);
+}
+
+.cadastro-form {
+  background-color: var(--cor-fundo-form);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  max-width: 100%;
+  margin: 20px auto;
+}
+
+.lista-item {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* Estilo para cada card de livro */
+.card-livro {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-livro:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-livro h3 {
+  margin-top: 10px;
+  color: var(--cor-secundaria);
+}
+
+.card-livro button {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-principal);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.card-livro button:hover {
+  background-color: #121d2b;
+}

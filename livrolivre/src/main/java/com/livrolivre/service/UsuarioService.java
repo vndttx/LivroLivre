@@ -1,27 +1,40 @@
-package com.livrolivreapp.service;
+package com.livrolivre.service;
 
-import com.livrolivreapp.model.Usuario;
-import com.livrolivreapp.repository.UsuarioRepository;
+import com.livrolivre.model.Usuario;
+import com.livrolivre.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Collections;
+import java.util.Optional;
 
+// 1. Adicionamos 'implements UserDetailsService'
 @Service
 public class UsuarioService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // Usar injeção via construtor é uma prática recomendada
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    // 2. Este é o método que o Spring Security vai usar
+    @Override
+    public UserDetails loadUserByUsername(String nomeUsuario) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByNomeUsuario(nomeUsuario)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o nome: " + nomeUsuario));
+
+        // Retorna um objeto User que o Spring Security entende
+        return new User(usuario.getNomeUsuario(), usuario.getSenha(), Collections.emptyList());
     }
 
     public Usuario salvar(Usuario usuario) {
@@ -32,17 +45,5 @@ public class UsuarioService implements UserDetailsService {
 
     public Optional<Usuario> buscarPorNomeUsuario(String nomeUsuario) {
         return usuarioRepository.findByNomeUsuario(nomeUsuario);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByNomeUsuario(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
-
-        return new org.springframework.security.core.userdetails.User(
-                usuario.getNomeUsuario(),
-                usuario.getSenha(),
-                Collections.emptyList()
-        );
     }
 }

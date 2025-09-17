@@ -1,6 +1,6 @@
-package com.livrolivreapp.repository;
+package com.livrolivre.repository;
 
-import com.livrolivreapp.model.Emprestimo;
+import com.livrolivre.model.Emprestimo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

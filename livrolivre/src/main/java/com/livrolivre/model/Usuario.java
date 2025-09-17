@@ -1,4 +1,4 @@
-package com.livrolivreapp.model;
+package com.livrolivre.model;
 
 import jakarta.persistence.*;
 

@@ -1,8 +1,8 @@
-package com.livrolivreapp.service;
+package com.livrolivre.service;
 
-import com.livrolivreapp.model.Emprestimo;
-import com.livrolivreapp.model.Livro;
-import com.livrolivreapp.repository.EmprestimoRepository;
+import com.livrolivre.model.Emprestimo;
+import com.livrolivre.model.Livro;
+import com.livrolivre.repository.EmprestimoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +31,7 @@ public class EmprestimoService {
             if (livroOptional.isPresent()) {
                 Livro livro = livroOptional.get();
                 Emprestimo novoEmprestimo = new Emprestimo();
-                novoEmprestimo.setUsuario(new com.livrolivreapp.model.Usuario()); // Cria um usuário temporário para associação
+                novoEmprestimo.setUsuario(new com.livrolivre.model.Usuario()); // Cria um usuário temporário para associação
                 novoEmprestimo.getUsuario().setId(usuarioId);
                 novoEmprestimo.setLivro(livro);
                 novoEmprestimo.setQuantidade(quantidade);

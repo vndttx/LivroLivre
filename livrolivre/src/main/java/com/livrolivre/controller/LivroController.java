@@ -1,13 +1,12 @@
-package com.livrolivreapp.controller;
+package com.livrolivre.controller;
 
-import com.livrolivreapp.model.Livro;
-import com.livrolivreapp.service.LivroService;
+import com.livrolivre.model.Livro;
+import com.livrolivre.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/livros")
@@ -37,11 +36,12 @@ public class LivroController {
     public ResponseEntity<Livro> decrementarEstoque(@PathVariable Long id) {
         return livroService.decrementarEstoque(id)
                 .map(livro -> ResponseEntity.ok().body(livro))
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.badRequest().build()); // .badRequest() é mais indicado para estoque esgotado
     }
+
     @PutMapping("/incrementar-estoque/{id}")
     public ResponseEntity<Livro> incrementarEstoque(@PathVariable Long id) {
-        return livroService.incrementarEstoque(id)
+        return livroService.incrementarEstoque(id, 1)
                 .map(livro -> ResponseEntity.ok().body(livro))
                 .orElse(ResponseEntity.notFound().build());
     }

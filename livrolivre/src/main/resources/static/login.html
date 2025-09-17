@@ -7,18 +7,22 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container">
+<div class="login-container">
     <h2>Login</h2>
-    <form id="login-form">
-        <label for="nome-usuario">Usuário:</label>
-        <input type="text" id="nome-usuario" name="nomeUsuario" required>
+    <form id="login-form" class="login-form" method="POST" action="">
+        <div class="form-group">
+            <label for="nome-usuario">Usuário:</label>
+            <input type="text" id="nome-usuario" name="nomeUsuario" required>
+        </div>
 
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required>
+        <div class="form-group">
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" required>
+        </div>
 
         <button type="submit">Entrar</button>
+        <p>Ainda não tem conta? <a href="cadastroUsuario.html">Cadastre-se aqui</a></p>
     </form>
-    <p>Ainda não tem conta? <a href="cadastroUsuario.html">Cadastre-se aqui</a></p>
 </div>
 
 <script src="js/login.js"></script>

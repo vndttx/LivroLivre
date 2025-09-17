@@ -18,14 +18,12 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         return response.json();
     })
     .then(data => {
-        const token = data.token;
-        localStorage.setItem('jwtToken', token);
-        localStorage.setItem('usuarioLogado', nomeUsuario);
+
+        localStorage.setItem('jwtToken', data.token);
+        localStorage.setItem('usuarioId', data.usuarioId);
+        localStorage.setItem('usuarioLogado', data.nomeUsuario);
+
         alert('Login bem-sucedido!');
         window.location.href = 'index.html';
     })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert(error.message);
-    });
 });

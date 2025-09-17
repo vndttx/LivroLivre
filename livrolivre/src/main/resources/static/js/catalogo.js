@@ -1,7 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
-    const tbody = document.querySelector('#livros-tabela tbody');
-    const usuarioId = 1;
+    const catalogoGrid = document.querySelector('.catalogo-grid');
+    const usuarioId = localStorage.getItem('usuarioId');
+    const btnSair = document.getElementById('btn-sair');
+
+    if (!usuarioId) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    if (btnSair) {
+        btnSair.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('usuarioId');
+            localStorage.removeItem('usuarioLogado');
+
+            alert("Você saiu com sucesso.");
+            window.location.href = 'login.html';
+        });
+    }
 
     function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
@@ -14,67 +33,53 @@ document.addEventListener('DOMContentLoaded', () => {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        return fetch(url, { // <-- CORRIGIDO: Agora chama a função 'fetch' global
+        return fetch(url, {
             ...options,
             headers: headers
+        }).then(response => {
+            if (response.status === 401) {
+                alert('Sua sessão expirou. Faça login novamente.');
+                window.location.href = 'login.html';
+            }
+            return response;
         });
     }
 
     function atualizarContadorCarrinho() {
         fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar o carrinho.');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(carrinho => {
-                let totalItens = 0;
-                carrinho.forEach(item => {
-                    totalItens += item.quantidade;
-                });
-                contadorCarrinhoSpan.textContent = totalItens;
+                contadorCarrinhoSpan.textContent = carrinho.length;
             })
             .catch(error => {
-                console.error('Erro:', error);
+                console.error('Erro ao atualizar contador:', error);
                 contadorCarrinhoSpan.textContent = 0;
             });
     }
 
     async function carregarLivros() {
         try {
-            // A sua lógica aqui está correta, mas a chamada 'fetchWithAuth'
-            // no início da função estava causando o erro de stack overflow.
-            const responseCarrinho = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
-            if (!responseCarrinho.ok) {
-                throw new Error('Erro ao buscar o carrinho para filtrar livros.');
-            }
-            const carrinho = await responseCarrinho.json();
-            const livrosNoCarrinhoIds = new Set(carrinho.map(item => item.livro.id));
             const responseLivros = await fetchWithAuth('/api/livros');
             if (!responseLivros.ok) {
                 throw new Error('Erro ao buscar os livros.');
             }
             const livros = await responseLivros.json();
 
-            tbody.innerHTML = '';
+            catalogoGrid.innerHTML = '';
             livros.forEach(livro => {
-                if (!livrosNoCarrinhoIds.has(livro.id)) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${livro.titulo}</td>
-                        <td>${livro.autor}</td>
-                        <td>${livro.genero || '-'}</td>
-                        <td>${livro.estoque || '-'}</td>
-                        <td>
-                            <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</a>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                }
+                const card = document.createElement('div');
+                card.classList.add('card-livro');
+                card.innerHTML = `
+                    <h3>${livro.titulo}</h3>
+                    <p><strong>Autor:</strong> ${livro.autor}</p>
+                    <p><strong>Gênero:</strong> ${livro.genero || '-'}</p>
+                    <p><strong>Estoque:</strong> ${livro.estoque || '-'}</p>
+                    <button class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</button>
+                `;
+                catalogoGrid.appendChild(card);
             });
         } catch (error) {
-            console.error('Erro:', error);
+            console.error('Erro ao carregar livros:', error);
             alert('Não foi possível carregar o catálogo de livros.');
         }
     }
@@ -85,29 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) {
-                return response.text().then(text => { throw new Error(text) });
+                throw new Error('Erro ao adicionar livro ao carrinho.');
             }
             return response.json();
         })
-        .then(livroAtualizado => {
-            alert(`"${livroAtualizado.titulo}" adicionado ao carrinho!`);
-            carregarLivros(); // Recarrega a tabela para esconder o livro adicionado
+        .then(() => {
+            alert('Livro adicionado ao carrinho!');
             atualizarContadorCarrinho();
         })
         .catch(error => {
             console.error('Erro:', error);
-            alert('Falha ao adicionar o livro. ' + error.message);
+            alert('Não foi possível adicionar o livro ao carrinho.');
         });
     }
 
-    tbody.addEventListener('click', (event) => {
+    catalogoGrid.addEventListener('click', (event) => {
         if (event.target.classList.contains('adicionar-carrinho')) {
-            event.preventDefault();
-            const livroId = event.target.getAttribute('data-id');
+            const livroId = event.target.dataset.id;
             adicionarLivroAoCarrinho(livroId);
         }
     });
 
-    carregarLivros();
     atualizarContadorCarrinho();
+    carregarLivros();
 });
