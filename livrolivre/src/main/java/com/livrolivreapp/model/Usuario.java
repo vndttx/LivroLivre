@@ -13,7 +13,6 @@ public class Usuario {
     private String nomeUsuario;
     private String senha;
 
-    // Getters e Setters
 
     public Long getId() {
         return id;

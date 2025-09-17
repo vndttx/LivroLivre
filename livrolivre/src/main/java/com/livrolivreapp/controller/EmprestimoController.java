@@ -15,7 +15,6 @@ public class EmprestimoController {
     @Autowired
     private EmprestimoService emprestimoService;
 
-    // Endpoint para adicionar um livro ao carrinho
     @PostMapping("/{usuarioId}/adicionar/{livroId}")
     public ResponseEntity<Emprestimo> adicionarAoCarrinho(@PathVariable Long usuarioId, @PathVariable Long livroId) {
         return emprestimoService.adicionarLivro(usuarioId, livroId, 1)
@@ -23,13 +22,11 @@ public class EmprestimoController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
-    // Endpoint para listar os itens do carrinho de um usuário
     @GetMapping("/{usuarioId}")
     public List<Emprestimo> listarCarrinho(@PathVariable Long usuarioId) {
         return emprestimoService.listarPorUsuario(usuarioId);
     }
 
-    // Endpoint para remover um item do carrinho
     @DeleteMapping("/{emprestimoId}")
     public ResponseEntity<Void> removerDoCarrinho(@PathVariable Long emprestimoId) {
         emprestimoService.removerDoCarrinho(emprestimoId);

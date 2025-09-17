@@ -19,7 +19,6 @@ public class Emprestimo {
 
     private int quantidade;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

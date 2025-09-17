@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const tbody = document.querySelector('#livros-tabela tbody');
-    const usuarioId = 1; // Substitua pelo ID do usuário logado
+    const usuarioId = 1;
 
     function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        return fetchWithAuth(url, {
+        return fetch(url, { // <-- CORRIGIDO: Agora chama a função 'fetch' global
             ...options,
             headers: headers
         });
@@ -43,15 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function carregarLivros() {
         try {
-            // Primeiro, busca os itens do carrinho
+            // A sua lógica aqui está correta, mas a chamada 'fetchWithAuth'
+            // no início da função estava causando o erro de stack overflow.
             const responseCarrinho = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
             if (!responseCarrinho.ok) {
                 throw new Error('Erro ao buscar o carrinho para filtrar livros.');
             }
             const carrinho = await responseCarrinho.json();
             const livrosNoCarrinhoIds = new Set(carrinho.map(item => item.livro.id));
-
-            // Segundo, busca todos os livros
             const responseLivros = await fetchWithAuth('/api/livros');
             if (!responseLivros.ok) {
                 throw new Error('Erro ao buscar os livros.');
@@ -60,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tbody.innerHTML = '';
             livros.forEach(livro => {
-                // Filtra e exibe apenas os livros que não estão no carrinho
                 if (!livrosNoCarrinhoIds.has(livro.id)) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -110,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Chamadas iniciais
     carregarLivros();
     atualizarContadorCarrinho();
 });

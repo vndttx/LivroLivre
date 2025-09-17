@@ -13,14 +13,13 @@ public class Livro {
     private String titulo;
     private String autor;
     private String genero;
-    private String sinopse; // Adicione esta linha
-    private String status;  // Adicione esta linha
+    private String sinopse;
+    private String status;
     private int estoque;
 
     public Livro() {
     }
 
-    // Getters e Setters para todos os campos
     public Long getId() {
         return id;
     }

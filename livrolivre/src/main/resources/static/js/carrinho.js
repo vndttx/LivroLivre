@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        return fetchWithAuth(url, {
+        return fetch(url, {
             ...options,
             headers: headers
         });

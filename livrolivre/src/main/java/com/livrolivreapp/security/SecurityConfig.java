@@ -21,17 +21,24 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+                        // Permissões para APIs públicas
                         .requestMatchers(HttpMethod.POST, "/api/autenticacao/login", "/api/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/livros").permitAll()   // Adicione esta linha
-                        .requestMatchers(HttpMethod.POST, "/api/livros").permitAll()  // Adicione esta linha
+                        .requestMatchers(HttpMethod.GET, "/api/livros").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/livros").permitAll()
+                        .requestMatchers("/api/carrinho/**").permitAll() // Esta linha permite o acesso ao carrinho
+
+                        // Permissões para arquivos estáticos e páginas
                         .requestMatchers(
                                 "/login.html",
                                 "/cadastroUsuario.html",
                                 "/cadastroLivro.html",
+                                "/carrinho.html",
                                 "/index.html",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/favicon.ico"
                         ).permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
