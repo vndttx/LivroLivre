@@ -1,93 +1,175 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const tbody = document.querySelector('#carrinho-tabela tbody');
+    const carrinhoTabelaBody = document.querySelector('#carrinho-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
+    const modal = document.getElementById('modal-troca');
+    const closeButton = document.querySelector('.close-button');
+    const selectMeusLivros = document.getElementById('select-meus-livros');
+    const btnConfirmarTroca = document.getElementById('btn-confirmar-troca');
+    const tituloLivroSolicitadoSpan = document.getElementById('titulo-livro-solicitado');
+    let livroSolicitadoAtualId = null;
 
-     if (!usuarioId) {
-            alert("Você não esta logado!");
-            window.location.href = 'login.html';
-            return;
-        }
+    if (!usuarioId) {
+        window.location.href = 'login.html';
+        return;
+    }
 
     function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
-        const headers = {
-            'Content-Type': 'application/json',
-            ...options.headers
-        };
-
+        const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-
-        return fetch(url, {
-            ...options,
-            headers: headers
-        });
+        return fetch(url, { ...options, headers });
     }
 
     function carregarCarrinho() {
         fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar o carrinho.');
-                }
-                return response.json();
-            })
-            .then(itens => {
-                tbody.innerHTML = '';
-                if (itens.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">Seu carrinho esta vazio.</td></tr>';
+            .then(response => response.json())
+            .then(carrinho => {
+                carrinhoTabelaBody.innerHTML = '';
+                if (carrinho.length === 0) {
+                    carrinhoTabelaBody.innerHTML = '<tr><td colspan="2">Seu carrinho esta vazio.</td></tr>';
                     return;
                 }
-
-                itens.forEach(item => {
+                carrinho.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${item.livro.titulo}</td>
-                        <td>${item.livro.autor}</td>
-                        <td>1</td>
+                        <td>${item.livro.titulo} (Dono: ${item.livro.proprietario.nomeUsuario})</td>
                         <td>
-                            <a href="#" class="remover-item" data-livro-id="${item.livro.id}">Remover</a>
+                            <a href="#" class="pedir-doacao" data-livro-id="${item.livro.id}">Pedir Doacao</a>
+                            <a href="#" class="propor-troca" data-livro-id="${item.livro.id}" data-livro-titulo="${item.livro.titulo}">Propor Troca</a>
+                            <a href="#" class="remover-carrinho" data-livro-id="${item.livro.id}">Remover</a>
                         </td>
                     `;
-                    tbody.appendChild(tr);
+                    carrinhoTabelaBody.appendChild(tr);
                 });
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                tbody.innerHTML = '<tr><td colspan="4">Nao foi possivel carregar o carrinho.</td></tr>';
             });
     }
 
     function removerItemDoCarrinho(livroId) {
-        if (!confirm('Tem certeza que deseja remover este livro do carrinho?')) {
-            return;
-        }
-
-        fetchWithAuth(`/api/carrinho/${usuarioId}/remover/${livroId}`, {
-            method: 'DELETE'
-        })
+        fetchWithAuth(`/api/carrinho/${usuarioId}/remover/${livroId}`, { method: 'DELETE' })
         .then(response => {
-            if (response.ok) {
-                alert('Livro removido com sucesso!');
-                carregarCarrinho();
-            } else {
-                throw new Error('Falha ao remover o livro do carrinho.');
-            }
+            if (!response.ok) throw new Error('Falha ao remover.');
+            alert('Livro removido do carrinho!');
+            carregarCarrinho();
         })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert(error.message);
-        });
+        .catch(error => console.error('Erro:', error));
     }
 
-    tbody.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remover-item')) {
-            event.preventDefault();
+    function pedirDoacao(livroId) {
+        if (confirm('Voce tem certeza que deseja solicitar este livro como doacao?')) {
+            fetchWithAuth(`/api/transacoes/finalizar/${livroId}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text || 'Falha ao solicitar a doacao.') });
+                }
+                return response.json();
+            })
+            .then(transacao => {
+                alert('Doacao solicitada com sucesso!');
+                carregarCarrinho();
+            })
+            .catch(error => {
+                console.error('Erro ao solicitar doacao:', error);
+                alert(`Nao foi possivel solicitar a doacao: ${error.message}`);
+            });
+        }
+    }
+
+    function abrirModalProposta(livroId, livroTitulo) {
+        livroSolicitadoAtualId = livroId;
+        tituloLivroSolicitadoSpan.textContent = livroTitulo;
+
+        fetchWithAuth('/api/livros/meus-livros')
+            .then(response => response.json())
+            .then(meusLivros => {
+                selectMeusLivros.innerHTML = '<option value="">Selecione um livro</option>';
+                if (meusLivros.length === 0) {
+                    selectMeusLivros.innerHTML = '<option value="">Voce nao tem livros disponiveis para troca</option>';
+                    btnConfirmarTroca.disabled = true;
+                } else {
+                    meusLivros.forEach(livro => {
+                        const option = document.createElement('option');
+                        option.value = livro.id;
+                        option.textContent = livro.titulo;
+                        selectMeusLivros.appendChild(option);
+                    });
+                    btnConfirmarTroca.disabled = false;
+                }
+                modal.style.display = 'block';
+            });
+    }
+
+    function fecharModal() {
+        modal.style.display = 'none';
+        livroSolicitadoAtualId = null;
+    }
+
+    carrinhoTabelaBody.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (event.target.classList.contains('remover-carrinho')) {
             const livroId = event.target.getAttribute('data-livro-id');
             removerItemDoCarrinho(livroId);
         }
+        if (event.target.classList.contains('propor-troca')) {
+            const livroId = event.target.getAttribute('data-livro-id');
+            const livroTitulo = event.target.getAttribute('data-livro-titulo');
+            abrirModalProposta(livroId, livroTitulo);
+        }
+        if (event.target.classList.contains('pedir-doacao')) {
+            const livroId = event.target.getAttribute('data-livro-id');
+            pedirDoacao(livroId);
+        }
     });
+
+    closeButton.addEventListener('click', fecharModal);
+    window.addEventListener('click', (event) => {
+        if (event.target == modal) {
+            fecharModal();
+        }
+    });
+
+    btnConfirmarTroca.addEventListener('click', () => {
+        const livroOfertadoId = selectMeusLivros.value;
+        if (!livroOfertadoId) {
+            alert('Por favor, selecione um livro para ofertar.');
+            return;
+        }
+
+        const proposta = {
+            livroSolicitadoId: livroSolicitadoAtualId,
+            livroOfertadoId: livroOfertadoId
+        };
+
+        fetchWithAuth('/api/transacoes/propor-troca', {
+            method: 'POST',
+            body: JSON.stringify(proposta)
+        })
+        .then(response => {
+            if (!response.ok) return response.text().then(text => { throw new Error(text) });
+            return response.json();
+        })
+        .then(transacao => {
+            alert('Proposta de troca enviada com sucesso!');
+            fecharModal();
+            carregarCarrinho();
+        })
+        .catch(error => {
+            console.error('Erro ao propor troca:', error);
+            alert(`Nao foi possivel enviar a proposta: ${error.message}`);
+        });
+    });
+
+    const btnSair = document.getElementById('btn-sair');
+    if (btnSair) {
+        btnSair.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
 
     carregarCarrinho();
 });

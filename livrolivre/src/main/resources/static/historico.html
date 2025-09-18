@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Livros</title>
+    <title>Meu Historico - LivroLivre</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="container">
-    <h1>Catálogo de Livros</h1>
+    <h1>Meu Historico de Transacoes</h1>
     <nav class="menu-principal">
         <a href="index.html" class="btn">Pagina Inicial</a>
-        <a href="cadastroLivro.html" class="btn">Cadastrar Livro</a>
+        <a href="catalogo.html" class="btn">Ver Catalogo</a>
         <a href="carrinho.html" class="btn">Ver Carrinho (<span id="contador-carrinho">0</span>)</a>
         <a href="#" id="btn-sair" class="btn">Sair</a>
     </nav>
 
-    <table id="livros-tabela">
+    <table id="historico-tabela">
         <thead>
         <tr>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Gênero</th>
-            <th>Estoque</th>
-            <th>Ação</th>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Livros Solicitados</th>
+            <th>Dono Original</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody>
@@ -31,6 +30,6 @@
     </table>
 </div>
 
-<script src="js/catalogo.js"></script>
+<script src="js/historico.js"></script>
 </body>
 </html>

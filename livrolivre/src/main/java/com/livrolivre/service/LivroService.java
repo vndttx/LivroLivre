@@ -1,6 +1,8 @@
 package com.livrolivre.service;
 
 import com.livrolivre.model.Livro;
+import com.livrolivre.model.Usuario;
+import com.livrolivre.model.enums.StatusLivro;
 import com.livrolivre.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,20 +32,7 @@ public class LivroService {
         livroRepository.deleteById(id);
     }
 
-    public Optional<Livro> decrementarEstoque(Long id) {
-        return livroRepository.findById(id).map(livro -> {
-            if (livro.getEstoque() > 0) {
-                livro.setEstoque(livro.getEstoque() - 1);
-                return livroRepository.save(livro);
-            }
-            return null;
-        });
-    }
-
-    public Optional<Livro> incrementarEstoque(Long id, int quantidade) {
-        return livroRepository.findById(id).map(livro -> {
-            livro.setEstoque(livro.getEstoque() + quantidade);
-            return livroRepository.save(livro);
-        });
+    public List<Livro> buscarPorProprietario(Usuario proprietario) {
+        return livroRepository.findByProprietarioAndStatus(proprietario, StatusLivro.DISPONIVEL);
     }
 }

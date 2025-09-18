@@ -1,26 +1,35 @@
-document.getElementById('cadastro-form').addEventListener('submit', function(event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('cadastro-form');
 
-    const nomeUsuario = document.getElementById('nome-usuario').value;
-    const senha = document.getElementById('senha').value;
+    form.addEventListener('submit', event => {
+        event.preventDefault();
 
-    fetch('/api/usuarios', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nomeUsuario, senha })
-    })
-    .then(response => {
-        if (response.ok) {
-            alert('Usuário cadastrado com sucesso! Faça o login.');
-            window.location.href = 'login.html'; // Redireciona para a tela de login
-        } else {
-            alert('Erro ao cadastrar usuário.');
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('Ocorreu um erro. Tente novamente mais tarde.');
+        const usuario = {
+            nomeUsuario: document.getElementById('nome-usuario').value,
+            senha: document.getElementById('senha').value
+        };
+
+        // Verifique se este trecho está correto
+        fetch('/api/usuarios', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(usuario)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Falha ao cadastrar. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Usuário cadastrado com sucesso!');
+            window.location.href = 'login.html';
+        })
+        .catch(error => {
+            console.error('Erro no cadastro:', error);
+            alert('Não foi possível cadastrar o usuário. Verifique o console.');
+        });
     });
 });

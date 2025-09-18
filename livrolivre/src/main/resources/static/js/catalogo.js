@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
-    const catalogoGrid = document.querySelector('.catalogo-grid');
+    const tbody = document.querySelector('#livros-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
     const btnSair = document.getElementById('btn-sair');
 
@@ -12,12 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSair) {
         btnSair.addEventListener('click', (event) => {
             event.preventDefault();
-
-            localStorage.removeItem('jwtToken');
-            localStorage.removeItem('usuarioId');
-            localStorage.removeItem('usuarioLogado');
-
-            alert("Você saiu com sucesso.");
+            localStorage.clear();
+            alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
         });
     }
@@ -37,8 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ...options,
             headers: headers
         }).then(response => {
-            if (response.status === 401) {
-                alert('Sua sessão expirou. Faça login novamente.');
+            if (response.status === 401 || response.status === 403) {
+                localStorage.clear();
+                alert('Sua sessao expirou. Faca login novamente.');
                 window.location.href = 'login.html';
             }
             return response;
@@ -59,28 +56,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function carregarLivros() {
         try {
+            const responseCarrinho = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
+            if (!responseCarrinho.ok) throw new Error('Erro ao buscar o carrinho.');
+            const carrinho = await responseCarrinho.json();
+            const livrosNoCarrinhoIds = new Set(carrinho.map(item => item.livro.id));
+
             const responseLivros = await fetchWithAuth('/api/livros');
-            if (!responseLivros.ok) {
-                throw new Error('Erro ao buscar os livros.');
-            }
+            if (!responseLivros.ok) throw new Error('Erro ao buscar os livros.');
             const livros = await responseLivros.json();
 
-            catalogoGrid.innerHTML = '';
+            tbody.innerHTML = '';
+
             livros.forEach(livro => {
-                const card = document.createElement('div');
-                card.classList.add('card-livro');
-                card.innerHTML = `
-                    <h3>${livro.titulo}</h3>
-                    <p><strong>Autor:</strong> ${livro.autor}</p>
-                    <p><strong>Gênero:</strong> ${livro.genero || '-'}</p>
-                    <p><strong>Estoque:</strong> ${livro.estoque || '-'}</p>
-                    <button class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</button>
-                `;
-                catalogoGrid.appendChild(card);
+                if (!livrosNoCarrinhoIds.has(livro.id) && (livro.proprietario && livro.proprietario.id != usuarioId)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${livro.titulo}</td>
+                        <td>${livro.autor}</td>
+                        <td>${livro.genero || '-'}</td>
+                        <td>${livro.estoque || '-'}</td>
+                        <td>
+                            <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</a>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
             });
         } catch (error) {
             console.error('Erro ao carregar livros:', error);
-            alert('Não foi possível carregar o catálogo de livros.');
+            tbody.innerHTML = '<tr><td colspan="5">Nao foi possivel carregar o catalogo de livros.</td></tr>';
         }
     }
 
@@ -89,24 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST'
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao adicionar livro ao carrinho.');
-            }
+            if (!response.ok) throw new Error('Erro ao adicionar livro ao carrinho.');
             return response.json();
         })
         .then(() => {
             alert('Livro adicionado ao carrinho!');
             atualizarContadorCarrinho();
+            carregarLivros();
         })
         .catch(error => {
             console.error('Erro:', error);
-            alert('Não foi possível adicionar o livro ao carrinho.');
+            alert('Nao foi possivel adicionar o livro ao carrinho.');
         });
     }
 
-    catalogoGrid.addEventListener('click', (event) => {
+    tbody.addEventListener('click', (event) => {
         if (event.target.classList.contains('adicionar-carrinho')) {
-            const livroId = event.target.dataset.id;
+            event.preventDefault();
+            const livroId = event.target.getAttribute('data-id');
             adicionarLivroAoCarrinho(livroId);
         }
     });

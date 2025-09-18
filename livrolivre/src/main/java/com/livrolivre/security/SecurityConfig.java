@@ -38,10 +38,11 @@ public class SecurityConfig {
                                 "/cadastroLivro.html",
                                 "/catalogo.html",
                                 "/carrinho.html",
+                                "/historico.html",
                                 "/css/**",
                                 "/js/**",
                                 "/favicon.ico",
-                                "/error" // <-- ADICIONADO PARA EVITAR ERROS 403 EM PÁGINAS 404
+                                "/error"
                         ).permitAll()
 
                         .anyRequest().authenticated()

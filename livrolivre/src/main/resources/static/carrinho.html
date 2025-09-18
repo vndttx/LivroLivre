@@ -1,28 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<thead>
-<tr>
-    <th>Titulo</th>
-    <th>Autor</th>
-    <th>Quantidade</th>
-    <th>Acao</th>
-</tr>
-</thead>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrinho - LivroLivre</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
 <div class="container">
-    <h1>Seu Carrinho de Compras</h1>
+    <h1>Meu Carrinho</h1>
+    <nav class="menu-principal">
+        <a href="index.html" class="btn">Pagina Inicial</a>
+        <a href="catalogo.html" class="btn">Ver Catalogo</a>
+        <a href="#" id="btn-sair" class="btn">Sair</a>
+    </nav>
+
     <table id="carrinho-tabela">
         <thead>
         <tr>
-            <th>Livro</th>
-            <th>Quantidade</th>
-            <th>Acao</th>
+            <th>Titulo</th>
+            <th>Acoes</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
-    <a href="index.html" class="voltar-btn">Continuar comprando</a>
+</div>
+
+<div id="modal-troca" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Oferecer Livro para Troca</h2>
+        <p>Selecione um dos seus livros disponiveis para oferecer em troca de <strong id="titulo-livro-solicitado"></strong>:</p>
+        <select id="select-meus-livros"></select>
+        <button id="btn-confirmar-troca" class="btn">Confirmar Proposta</button>
+    </div>
 </div>
 
 <script src="js/carrinho.js"></script>
