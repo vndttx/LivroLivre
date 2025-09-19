@@ -4,9 +4,9 @@ import com.livrolivre.model.enums.StatusLivro;
 import jakarta.persistence.*;
 import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "livros")
-@Data
 public class Livro {
 
     @Id
@@ -16,12 +16,12 @@ public class Livro {
     private String titulo;
     private String autor;
     private String genero;
-    private Integer estoque;
+    private int estoque;
 
     @Enumerated(EnumType.STRING)
     private StatusLivro status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "proprietario_id")
     private Usuario proprietario;
 }
