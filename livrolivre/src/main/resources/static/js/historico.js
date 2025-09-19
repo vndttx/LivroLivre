@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#historico-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
+    const btnSair = document.getElementById('btn-sair');
+
 
     if (!usuarioId) {
         window.location.href = 'login.html';
@@ -59,16 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Adiciona o evento de sair (logout)
-    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (event) => {
-            event.preventDefault();
-            localStorage.removeItem('jwtToken');
-            localStorage.removeItem('usuarioId');
-            localStorage.removeItem('usuarioLogado');
-            window.location.href = 'login.html';
-        });
+                btnSair.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    localStorage.clear();
+                    alert("Voce saiu com sucesso.");
+                    window.location.href = 'login.html';
+                });
     }
 
     carregarHistorico();

@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectMeusLivros = document.getElementById('select-meus-livros');
     const btnConfirmarTroca = document.getElementById('btn-confirmar-troca');
     const tituloLivroSolicitadoSpan = document.getElementById('titulo-livro-solicitado');
+    const btnSair = document.getElementById('btn-sair');
+
     let livroSolicitadoAtualId = null;
 
     if (!usuarioId) {
@@ -162,13 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = 'login.html';
-        });
+                btnSair.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    localStorage.clear();
+                    alert("Voce saiu com sucesso.");
+                    window.location.href = 'login.html';
+                });
     }
 
     carregarCarrinho();

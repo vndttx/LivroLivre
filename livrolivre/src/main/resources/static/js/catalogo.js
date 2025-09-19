@@ -71,13 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!livrosNoCarrinhoIds.has(livro.id) && (livro.proprietario && livro.proprietario.id != usuarioId)) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${livro.titulo}</td>
-                        <td>${livro.autor}</td>
-                        <td>${livro.genero || '-'}</td>
-                        <td>${livro.estoque || '-'}</td>
-                        <td>
-                            <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</a>
-                        </td>
+                        <td><a href="detalhes.html?id=${livro.id}">${livro.titulo}</a></td>
+                            <td>${livro.autor}</td>
+                            <td>${livro.genero || '-'}</td>
+                            <td>${livro.estoque || '-'}</td>
+                            <td>
+                                <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</a>
+                            </td>
                     `;
                     tbody.appendChild(tr);
                 }

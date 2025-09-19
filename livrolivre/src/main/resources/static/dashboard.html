@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Usuario - LivroLivre</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <h1 id="titulo-painel">Painel do Usuario</h1>
+    <nav class="menu-principal">
+        <a href="index.html" class="btn">Pagina Inicial</a>
+        <a href="catalogo.html" class="btn">Ver Catalogo</a>
+        <a href="carrinho.html" class="btn">Ver Carrinho (<span id="contador-carrinho">0</span>)</a>
+        <a href="#" id="btn-sair" class="btn">Sair</a>
+    </nav>
+
+    <section>
+        <h2>Ofertas de Troca Recebidas</h2>
+        <table id="ofertas-tabela">
+            <thead>
+            <tr>
+                <th>Usuario Solicitante</th>
+                <th>Livro Oferecido</th>
+                <th>Seu Livro Solicitado</th>
+                <th>Acoes</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Meus Livros Cadastrados</h2>
+        <table id="meus-livros-tabela">
+            <thead>
+            <tr>
+                <th>Titulo</th>
+                <th>Autor</th>
+                <th>Status</th>
+                <th>Acoes</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Meu Historico de Solicitacoes</h2>
+        <table id="historico-tabela">
+            <thead>
+            <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Livros</th>
+                <th>Dono Original</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

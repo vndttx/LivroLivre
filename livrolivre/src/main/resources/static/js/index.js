@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#livros-recentes-tabela tbody');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const usuarioId = localStorage.getItem('usuarioId');
-
+    const btnSair = document.getElementById('btn-sair');
 
     if (!usuarioId) {
         window.location.href = 'login.html';
@@ -96,16 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('jwtToken');
-            localStorage.removeItem('usuarioId');
-            window.location.href = 'login.html';
-        });
+            btnSair.addEventListener('click', (event) => {
+                event.preventDefault();
+                localStorage.clear();
+                alert("Voce saiu com sucesso.");
+                window.location.href = 'login.html';
+            });
     }
-
-    carregarLivrosRecentes();
     atualizarContadorCarrinho();
 });

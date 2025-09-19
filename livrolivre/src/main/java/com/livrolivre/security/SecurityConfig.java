@@ -1,6 +1,6 @@
 package com.livrolivre.security;
 
-import com.livrolivre.config.ApplicationConfig;
+import com.livrolivre.config.JacksonConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 @Configuration
 @EnableWebSecurity
-@Import(ApplicationConfig.class)
+@Import(JacksonConfig.class)
 public class SecurityConfig {
 
     @Autowired
@@ -29,7 +28,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/autenticacao/login", "/api/usuarios").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/livros").authenticated()
                         .requestMatchers(
                                 "/",
                                 "/index.html",
@@ -38,13 +36,13 @@ public class SecurityConfig {
                                 "/cadastroLivro.html",
                                 "/catalogo.html",
                                 "/carrinho.html",
+                                "/dashboard.html",
                                 "/historico.html",
+                                "/ofertas.html",
                                 "/css/**",
                                 "/js/**",
-                                "/favicon.ico",
-                                "/error"
+                                "/favicon.ico"
                         ).permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

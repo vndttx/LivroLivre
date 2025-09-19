@@ -60,4 +60,39 @@ public class TransacaoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/ofertas-recebidas")
+    public ResponseEntity<List<Transacao>> getOfertasRecebidas(Principal principal) {
+        String nomeUsuario = principal.getName();
+        Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
+        List<Transacao> ofertas = transacaoService.buscarOfertasRecebidas(proprietario);
+        return ResponseEntity.ok(ofertas);
+    }
+
+    @PostMapping("/{id}/aceitar")
+    public ResponseEntity<?> aceitarTroca(@PathVariable Long id, Principal principal) {
+        try {
+            String nomeUsuario = principal.getName();
+            Usuario usuarioLogado = usuarioRepository.findByNomeUsuario(nomeUsuario)
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+            Transacao transacao = transacaoService.aceitarTroca(id, usuarioLogado);
+            return ResponseEntity.ok(transacao);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/recusar")
+    public ResponseEntity<?> recusarTroca(@PathVariable Long id, Principal principal) {
+        try {
+            String nomeUsuario = principal.getName();
+            Usuario usuarioLogado = usuarioRepository.findByNomeUsuario(nomeUsuario)
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+            Transacao transacao = transacaoService.recusarTroca(id, usuarioLogado);
+            return ResponseEntity.ok(transacao);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
