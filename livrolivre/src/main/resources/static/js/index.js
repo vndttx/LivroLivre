@@ -97,12 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (btnSair) {
-            btnSair.addEventListener('click', (event) => {
-                event.preventDefault();
-                localStorage.clear();
-                alert("Voce saiu com sucesso.");
-                window.location.href = 'login.html';
-            });
-    }
+                    btnSair.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        localStorage.clear();
+                        alert("Voce saiu com sucesso.");
+                        window.location.href = 'login.html';
+                    });
+        }
     atualizarContadorCarrinho();
 });
