@@ -8,13 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    function fetchWithAuth(url, options = {}) {
+    async function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
         const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        return fetch(url, { ...options, headers });
+
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.clear();
+            alert('Sessao expirada.');
+            window.location.href = 'login.html';
+            return Promise.reject(new Error('Sessao expirada'));
+        }
+        return response;
     }
 
     async function carregarOfertas() {
@@ -25,10 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const ofertas = await response.json();
             tbody.innerHTML = '';
+
             if (ofertas.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4">Voce nao tem nenhuma oferta de troca pendente.</td></tr>';
                 return;
             }
+
             ofertas.forEach(oferta => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -43,39 +54,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
         } catch (error) {
-            console.error('Erro ao carregar ofertas:', error);
             tbody.innerHTML = '<tr><td colspan="4">Ocorreu um erro ao carregar as ofertas.</td></tr>';
         }
     }
 
-    function aceitarOferta(transacaoId) {
-        fetchWithAuth(`/api/transacoes/${transacaoId}/aceitar`, { method: 'POST' })
-            .then(response => {
-                if (!response.ok) return response.text().then(text => { throw new Error(text) });
-                return response.json();
-            })
-            .then(() => {
+    async function aceitarOferta(transacaoId) {
+        try {
+            const response = await fetchWithAuth(`/api/transacoes/${transacaoId}/aceitar`, { method: 'POST' });
+
+            if (response.ok) {
                 alert('Troca aceita com sucesso!');
                 carregarOfertas();
-            })
-            .catch(error => {
-                alert(`Erro ao aceitar a troca: ${error.message}`);
-            });
+            } else {
+                const erro = await response.text();
+                throw new Error(erro);
+            }
+        } catch (error) {
+            alert(`Erro ao aceitar a troca: ${error.message}`);
+        }
     }
 
-    function recusarOferta(transacaoId) {
-        fetchWithAuth(`/api/transacoes/${transacaoId}/recusar`, { method: 'POST' })
-            .then(response => {
-                if (!response.ok) return response.text().then(text => { throw new Error(text) });
-                return response.json();
-            })
-            .then(() => {
+    async function recusarOferta(transacaoId) {
+        try {
+            const response = await fetchWithAuth(`/api/transacoes/${transacaoId}/recusar`, { method: 'POST' });
+
+            if (response.ok) {
                 alert('Troca recusada com sucesso.');
                 carregarOfertas();
-            })
-            .catch(error => {
-                alert(`Erro ao recusar a troca: ${error.message}`);
-            });
+            } else {
+                const erro = await response.text();
+                throw new Error(erro);
+            }
+        } catch (error) {
+            alert(`Erro ao recusar a troca: ${error.message}`);
+        }
     }
 
     tbody.addEventListener('click', (event) => {
@@ -90,12 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (btnSair) {
-            btnSair.addEventListener('click', (event) => {
-                event.preventDefault();
-                localStorage.clear();
-                alert("Voce saiu com sucesso.");
-                window.location.href = 'login.html';
-            });
+        btnSair.addEventListener('click', (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            alert("Voce saiu com sucesso.");
+            window.location.href = 'login.html';
+            return;
+        });
     }
 
     carregarOfertas();

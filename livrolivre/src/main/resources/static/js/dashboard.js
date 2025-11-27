@@ -1,91 +1,130 @@
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
-    const btnSair = document.getElementById("btn-sair");
-
-    const tabelaHistorico = document.querySelector('#tabela-historico tbody'); // Verifique se o ID no HTML é este
-    const tabelaMeusLivros = document.querySelector('#tabela-meus-livros tbody'); // Verifique se o ID no HTML é este
+    const ofertasBody = document.querySelector('#ofertas-tabela tbody');
+    const meusLivrosBody = document.querySelector('#tabela-meus-livros tbody');
+    const historicoBody = document.querySelector('#historico-tabela tbody');
+    const btnSair = document.getElementById('btn-sair');
+    const tituloPainel = document.getElementById('titulo-painel');
 
     if (!usuarioId) {
         window.location.href = 'login.html';
         return;
     }
 
-    function fetchWithAuth(url, options = {}) {
+    if (tituloPainel) {
+        tituloPainel.textContent = `Painel do Usuario ${usuarioId}`;
+    }
+
+    async function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
         };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-        return fetch(url, { ...options, headers });
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.clear();
+            alert('Sessao expirada.');
+            window.location.href = 'login.html';
+            return Promise.reject(new Error('Sessão expirada'));
+        }
+
+        return response;
     }
 
-    function atualizarContador() {
+    async function atualizarContador() {
         if (!contadorCarrinhoSpan) return;
-        fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(res => res.ok ? res.json() : [])
-            .then(lista => {
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
+            if (response.ok) {
+                const lista = await response.json();
                 contadorCarrinhoSpan.textContent = lista.length || 0;
-            })
-            .catch(() => contadorCarrinhoSpan.textContent = 0);
+            }
+        } catch (error) {
+            contadorCarrinhoSpan.textContent = 0;
+        }
     }
 
-    // --- 3. CARREGAR HISTÓRICO (DOAÇÕES/TROCAS) ---
-    async function carregarHistorico() {
-        if (!tabelaHistorico) return;
-
-        tabelaHistorico.innerHTML = '<tr><td colspan="5">Carregando...</td></tr>';
+    async function carregarOfertas() {
+        if (!ofertasBody) return;
+        ofertasBody.innerHTML = '<tr><td colspan="4">Carregando ofertas...</td></tr>';
 
         try {
-            // Ajuste a URL se seu controller for diferente
-            const response = await fetchWithAuth(`/api/transacoes/usuario/${usuarioId}`);
-            if (!response.ok) throw new Error("Erro ao buscar historico");
+            const response = await fetchWithAuth('/api/transacoes/ofertas-recebidas');
+            if (!response.ok) throw new Error('Erro ao buscar ofertas.');
 
-            const transacoes = await response.json();
-            tabelaHistorico.innerHTML = '';
+            const ofertas = await response.json();
+            ofertasBody.innerHTML = '';
 
-            if (transacoes.length === 0) {
-                tabelaHistorico.innerHTML = '<tr><td colspan="5">Nenhuma transacao encontrada.</td></tr>';
+            if (ofertas.length === 0) {
+                ofertasBody.innerHTML = '<tr><td colspan="4">Nenhuma oferta recebida.</td></tr>';
                 return;
             }
 
-            transacoes.forEach(t => {
-                const dataFormatada = new Date(t.dataCriacao).toLocaleDateString('pt-BR');
+            ofertas.forEach(oferta => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${dataFormatada}</td>
-                    <td>${t.tipo}</td>
-                    <td>${t.livro ? t.livro.titulo : 'Livro removido'}</td>
-                    <td>${t.donoOriginal ? t.donoOriginal.nome : '-'}</td>
-                    <td>${t.status}</td>
+                    <td>${oferta.solicitante ? oferta.solicitante.nomeUsuario : 'Usuario desconhecido'}</td>
+                    <td>${oferta.livroOfertado ? oferta.livroOfertado.titulo : '-'}</td>
+                    <td>${oferta.livroSolicitado ? oferta.livroSolicitado.titulo : '-'}</td>
+                    <td>
+                        <button class="btn-aceitar" data-id="${oferta.id}" style="color: green; cursor: pointer; margin-right: 10px;">Aceitar</button>
+                        <button class="btn-recusar" data-id="${oferta.id}" style="color: red; cursor: pointer;">Recusar</button>
+                    </td>
                 `;
-                tabelaHistorico.appendChild(tr);
+                ofertasBody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.btn-aceitar').forEach(btn => {
+                btn.addEventListener('click', (e) => processarTroca(e.target.dataset.id, 'aceitar'));
+            });
+            document.querySelectorAll('.btn-recusar').forEach(btn => {
+                btn.addEventListener('click', (e) => processarTroca(e.target.dataset.id, 'recusar'));
             });
 
         } catch (error) {
-            console.error(error);
-            tabelaHistorico.innerHTML = '<tr><td colspan="5">Erro ao carregar historico.</td></tr>';
+            ofertasBody.innerHTML = '<tr><td colspan="4">Erro ao carregar ofertas.</td></tr>';
         }
     }
-async function carregarMeusLivros() {
-        const tabelaMeusLivros = document.querySelector('#tabela-meus-livros tbody');
-        if (!tabelaMeusLivros) return;
 
-        tabelaMeusLivros.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
+    async function processarTroca(id, acao) {
+        if (!confirm(`Deseja realmente ${acao} esta troca?`)) return;
+
+        try {
+            const response = await fetchWithAuth(`/api/transacoes/${id}/${acao}`, { method: 'POST' });
+            if (response.ok) {
+                alert(`Troca ${acao === 'aceitar' ? 'aceita' : 'recusada'} com sucesso!`);
+                carregarOfertas();
+                carregarHistorico();
+            } else {
+                const erro = await response.text();
+                alert(`Erro ao ${acao}: ${erro}`);
+            }
+        } catch (error) {
+            alert(`Erro de conexão ao ${acao} troca.`);
+        }
+    }
+
+    async function carregarMeusLivros() {
+        if (!meusLivrosBody) return;
+        meusLivrosBody.innerHTML = '<tr><td colspan="4">Carregando livros...</td></tr>';
 
         try {
             const response = await fetchWithAuth('/api/livros/meus-livros');
-
-            if (!response.ok) {
-                throw new Error('Erro ao buscar meus livros');
-            }
+            if (!response.ok) throw new Error('Erro ao buscar livros.');
 
             const livros = await response.json();
-            tabelaMeusLivros.innerHTML = '';
+            meusLivrosBody.innerHTML = '';
 
             if (livros.length === 0) {
-                tabelaMeusLivros.innerHTML = '<tr><td colspan="4">Voce nao cadastrou nenhum livro.</td></tr>';
+                meusLivrosBody.innerHTML = '<tr><td colspan="4">Voce nao cadastrou nenhum livro.</td></tr>';
                 return;
             }
 
@@ -96,53 +135,97 @@ async function carregarMeusLivros() {
                     <td>${livro.autor}</td>
                     <td>${livro.status}</td>
                     <td>
-                        <button class="btn-excluir" data-id="${livro.id}" style="color: red; border: none; background: none; cursor: pointer;">
-                            Remover
-                        </button>
+                        <button class="btn-remover-livro" data-id="${livro.id}" style="color: red; cursor: pointer;">Remover</button>
                     </td>
                 `;
-                tabelaMeusLivros.appendChild(tr);
+                meusLivrosBody.appendChild(tr);
             });
 
-            document.querySelectorAll('.btn-excluir').forEach(btn => {
+            document.querySelectorAll('.btn-remover-livro').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    if(confirm('Tem certeza que deseja excluir este livro?')) {
-                        await removerLivro(id);
+                    if (confirm('Tem certeza que deseja remover este livro?')) {
+                        await removerLivro(e.target.dataset.id);
                     }
                 });
             });
 
         } catch (error) {
-            console.error(error);
-            tabelaMeusLivros.innerHTML = '<tr><td colspan="4">Erro ao carregar livros.</td></tr>';
+            meusLivrosBody.innerHTML = '<tr><td colspan="4">Erro ao carregar livros.</td></tr>';
         }
     }
 
     async function removerLivro(id) {
         try {
-            const res = await fetchWithAuth(`/api/livros/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                alert('Livro removido!');
-                carregarMeusLivros(); // Recarrega a tabela
+            const response = await fetchWithAuth(`/api/livros/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                alert('Livro removido com sucesso!');
+                carregarMeusLivros();
             } else {
-                alert('Erro ao remover.');
+                alert('Erro ao remover livro.');
             }
         } catch (error) {
-            console.error(error);
+            alert('Erro de conexão.');
+        }
+    }
+
+    async function carregarHistorico() {
+        if (!historicoBody) return;
+        historicoBody.innerHTML = '<tr><td colspan="5">Carregando...</td></tr>';
+
+        try {
+            const response = await fetchWithAuth(`/api/transacoes/historico`);
+            if (!response.ok) throw new Error("Erro ao buscar historico");
+
+            const transacoes = await response.json();
+            historicoBody.innerHTML = '';
+
+            if (transacoes.length === 0) {
+                historicoBody.innerHTML = '<tr><td colspan="5">Nenhuma transacao encontrada.</td></tr>';
+                return;
+            }
+
+            transacoes.forEach(t => {
+                const dataFormatada = new Date(t.data).toLocaleDateString('pt-BR');
+
+                let descricaoLivros = '';
+                if (t.tipo === 'TROCA') {
+                    const solicitado = t.livroSolicitado ? t.livroSolicitado.titulo : '?';
+                    const ofertado = t.livroOfertado ? t.livroOfertado.titulo : '?';
+                    descricaoLivros = `Troca: ${ofertado} por ${solicitado}`;
+                } else {
+                    descricaoLivros = t.livroSolicitado ? t.livroSolicitado.titulo : 'Livro desconhecido';
+                }
+
+                const donoOriginal = t.proprietario ? t.proprietario.nomeUsuario : '-';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${t.tipo}</td>
+                    <td>${descricaoLivros}</td>
+                    <td>${donoOriginal}</td>
+                    <td>${t.status}</td>
+                `;
+                historicoBody.appendChild(tr);
+            });
+
+        } catch (error) {
+            historicoBody.innerHTML = '<tr><td colspan="5">Erro ao carregar historico.</td></tr>';
         }
     }
 
     if (btnSair) {
-            btnSair.addEventListener('click', (event) => {
-                event.preventDefault();
-                localStorage.clear();
-                alert("Voce saiu com sucesso.");
-                window.location.href = 'login.html';
-            });
+        btnSair.addEventListener('click', (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            alert("Voce saiu com sucesso.");
+            window.location.href = 'login.html';
+            return;
+        });
     }
 
     atualizarContador();
-    carregarHistorico();
+    carregarOfertas();
     carregarMeusLivros();
+    carregarHistorico();
 });

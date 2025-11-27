@@ -24,84 +24,94 @@ document.addEventListener('DOMContentLoaded', () => {
         return fetch(url, { ...options, headers });
     }
 
-    function carregarCarrinho() {
-        fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(response => response.json())
-            .then(carrinho => {
-                carrinhoTabelaBody.innerHTML = '';
-                if (carrinho.length === 0) {
-                    carrinhoTabelaBody.innerHTML = '<tr><td colspan="2">Seu carrinho esta vazio.</td></tr>';
-                    return;
-                }
-                carrinho.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${item.livro.titulo} (Dono: ${item.livro.proprietario.nomeUsuario})</td>
-                        <td>
-                            <a href="#" class="pedir-doacao" data-livro-id="${item.livro.id}">Pedir Doacao</a>
-                            <a href="#" class="propor-troca" data-livro-id="${item.livro.id}" data-livro-titulo="${item.livro.titulo}">Propor Troca</a>
-                            <a href="#" class="remover-carrinho" data-livro-id="${item.livro.id}">Remover</a>
-                        </td>
-                    `;
-                    carrinhoTabelaBody.appendChild(tr);
-                });
-            });
-    }
+    async function carregarCarrinho() {
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
+            const carrinho = await response.json();
 
-    function removerItemDoCarrinho(livroId) {
-        fetchWithAuth(`/api/carrinho/${usuarioId}/remover/${livroId}`, { method: 'DELETE' })
-        .then(response => {
-            if (!response.ok) throw new Error('Falha ao remover.');
-            alert('Livro removido do carrinho!');
-            carregarCarrinho();
-        })
-        .catch(error => console.error('Erro:', error));
-    }
-
-    function pedirDoacao(livroId) {
-        if (confirm('Voce tem certeza que deseja solicitar este livro como doacao?')) {
-            fetchWithAuth(`/api/transacoes/finalizar/${livroId}`, {
-                method: 'POST'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text || 'Falha ao solicitar a doacao.') });
-                }
+            carrinhoTabelaBody.innerHTML = '';
+            if (carrinho.length === 0) {
+                carrinhoTabelaBody.innerHTML = '<tr><td colspan="2">Seu carrinho esta vazio.</td></tr>';
                 return;
-            })
-            .then(() => {
-                alert('Doacao solicitada com sucesso!');
-                carregarCarrinho();
-            })
-            .catch(error => {
-                console.error('Erro ao solicitar doacao:', error);
-                alert(`Nao foi possivel solicitar a doacao: ${error.message}`);
+            }
+
+            carrinho.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.livro.titulo} (Dono: ${item.livro.proprietario.nomeUsuario})</td>
+                    <td>
+                        <a href="#" class="pedir-doacao" data-livro-id="${item.livro.id}">Pedir Doacao</a>
+                        <a href="#" class="propor-troca" data-livro-id="${item.livro.id}" data-livro-titulo="${item.livro.titulo}">Propor Troca</a>
+                        <a href="#" class="remover-carrinho" data-livro-id="${item.livro.id}">Remover</a>
+                    </td>
+                `;
+                carrinhoTabelaBody.appendChild(tr);
             });
+        } catch (error) {
+            console.error('Erro ao carregar carrinho:', error);
         }
     }
 
-    function abrirModalProposta(livroId, livroTitulo) {
+    async function removerItemDoCarrinho(livroId) {
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}/remover/${livroId}`, { method: 'DELETE' });
+            if (response.ok) {
+                alert('Livro removido do carrinho!');
+                carregarCarrinho();
+            } else {
+                throw new Error('Falha ao remover.');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+        }
+    }
+
+    async function pedirDoacao(livroId) {
+        if (confirm('Voce tem certeza que deseja solicitar este livro como doacao?')) {
+            try {
+                const response = await fetchWithAuth(`/api/transacoes/finalizar/${livroId}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    alert('Doacao solicitada com sucesso!');
+                    carregarCarrinho();
+                } else {
+                    const erro = await response.text();
+                    throw new Error(erro || 'Falha ao solicitar a doacao.');
+                }
+            } catch (error) {
+                console.error('Erro ao solicitar doacao:', error);
+                alert(`Nao foi possivel solicitar a doacao: ${error.message}`);
+            }
+        }
+    }
+
+    async function abrirModalProposta(livroId, livroTitulo) {
         livroSolicitadoAtualId = livroId;
         tituloLivroSolicitadoSpan.textContent = livroTitulo;
 
-        fetchWithAuth('/api/livros/meus-livros')
-            .then(response => response.json())
-            .then(meusLivros => {
-                selectMeusLivros.innerHTML = '<option value="">Selecione um livro</option>';
-                if (meusLivros.length === 0) {
-                    selectMeusLivros.innerHTML = '<option value="">Voce nao tem livros disponiveis para troca</option>';
-                    btnConfirmarTroca.disabled = true;
-                } else {
-                    meusLivros.forEach(livro => {
-                        const option = document.createElement('option');
-                        option.value = livro.id;
-                        option.textContent = livro.titulo;
-                        selectMeusLivros.appendChild(option);
-                    });
-                    btnConfirmarTroca.disabled = false;
-                }
-                modal.style.display = 'block';
-            });
+        try {
+            const response = await fetchWithAuth('/api/livros/meus-livros');
+            const meusLivros = await response.json();
+
+            selectMeusLivros.innerHTML = '<option value="">Selecione um livro</option>';
+            if (meusLivros.length === 0) {
+                selectMeusLivros.innerHTML = '<option value="">Voce nao tem livros disponiveis para troca</option>';
+                btnConfirmarTroca.disabled = true;
+            } else {
+                meusLivros.forEach(livro => {
+                    const option = document.createElement('option');
+                    option.value = livro.id;
+                    option.textContent = livro.titulo;
+                    selectMeusLivros.appendChild(option);
+                });
+                btnConfirmarTroca.disabled = false;
+            }
+            modal.style.display = 'block';
+        } catch (error) {
+            console.error('Erro ao carregar livros para troca:', error);
+        }
     }
 
     function fecharModal() {
@@ -133,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    btnConfirmarTroca.addEventListener('click', () => {
+    btnConfirmarTroca.addEventListener('click', async () => {
         const livroOfertadoId = selectMeusLivros.value;
         if (!livroOfertadoId) {
             alert('Por favor, selecione um livro para ofertar.');
@@ -145,32 +155,34 @@ document.addEventListener('DOMContentLoaded', () => {
             livroOfertadoId: livroOfertadoId
         };
 
-        fetchWithAuth('/api/transacoes/propor-troca', {
-            method: 'POST',
-            body: JSON.stringify(proposta)
-        })
-        .then(response => {
-            if (!response.ok) return response.text().then(text => { throw new Error(text) });
-            return;
-        })
-        .then(() => {
-            alert('Proposta de troca enviada com sucesso!');
-            fecharModal();
-            carregarCarrinho();
-        })
-        .catch(error => {
+        try {
+            const response = await fetchWithAuth('/api/transacoes/propor-troca', {
+                method: 'POST',
+                body: JSON.stringify(proposta)
+            });
+
+            if (response.ok) {
+                alert('Proposta de troca enviada com sucesso!');
+                fecharModal();
+                carregarCarrinho();
+            } else {
+                const erro = await response.text();
+                throw new Error(erro);
+            }
+        } catch (error) {
             console.error('Erro ao propor troca:', error);
             alert(`Nao foi possivel enviar a proposta: ${error.message}`);
-        });
+        }
     });
 
     if (btnSair) {
-                btnSair.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    localStorage.clear();
-                    alert("Voce saiu com sucesso.");
-                    window.location.href = 'login.html';
-                });
+        btnSair.addEventListener('click', (event) => {
+            event.preventDefault();
+            localStorage.clear();
+            alert("Voce saiu com sucesso.");
+            window.location.href = 'login.html';
+            return;
+        });
     }
 
     carregarCarrinho();

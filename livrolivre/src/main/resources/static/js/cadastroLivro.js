@@ -43,10 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     const erro = await response.text();
                     alert('Erro ao cadastrar: ' + erro);
-                    console.error('Erro backend:', erro);
                 }
             } catch (error) {
-                console.error('Erro de rede:', error);
                 alert('Erro de conexao com o servidor.');
             }
         });

@@ -1,54 +1,55 @@
 package com.livrolivre.controller;
-
-import com.livrolivre.model.Usuario; // Importar o modelo Usuario
+import com.livrolivre.model.Usuario;
 import com.livrolivre.security.JwtTokenUtil;
-import com.livrolivre.security.LoginResponse; // Importar a nova classe de resposta
+import com.livrolivre.security.LoginResponse;
 import com.livrolivre.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException; // Importar
-import org.springframework.http.HttpStatus; // Importar
+import org.springframework.http.HttpStatus;
 
-import java.util.Collections;
-import java.util.Map;
+import org.springframework.security.core.AuthenticationException;
+import com.livrolivre.controller.dto.LoginRequest;
 
 @RestController
 public class AutenticacaoController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
+
+    public AutenticacaoController(AuthenticationManager authenticationManager, UsuarioService usuarioService, JwtTokenUtil jwtTokenUtil) {
+        this.authenticationManager = authenticationManager;
+        this.usuarioService = usuarioService;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @PostMapping("/api/autenticacao/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<?> autenticarUsuario(@RequestBody LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.get("nomeUsuario"), loginRequest.get("senha"))
+                    new UsernamePasswordAuthenticationToken(loginRequest.getNomeUsuario(), loginRequest.getSenha())
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
             Usuario usuario = usuarioService.buscarPorNomeUsuario(userDetails.getUsername())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
 
-            String token = jwtTokenUtil.generateToken(userDetails);
+            String jwt = jwtTokenUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new LoginResponse(token, usuario.getId(), usuario.getNomeUsuario()));
+            return ResponseEntity.ok(new LoginResponse(jwt, usuario.getId()));
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Credenciais inválidas."));
+        } catch (AuthenticationException e) {
+            String mensagem = "Usuario ou senha incorreta.";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mensagem);
         }
     }
 }

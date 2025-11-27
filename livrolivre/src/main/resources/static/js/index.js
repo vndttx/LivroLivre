@@ -5,35 +5,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#livros-recentes-tabela tbody');
 
     if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
+        btnSair.addEventListener('click', (event) => {
+            event.preventDefault();
             localStorage.clear();
             alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
+            return;
         });
     }
 
     if (!usuarioId) {
         window.location.href = 'login.html';
+        return;
     }
 
-    function fetchWithAuth(url, options = {}) {
+    async function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
         };
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-        return fetch(url, { ...options, headers });
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.clear();
+            alert('Sessao expirada.');
+            window.location.href = 'login.html';
+            return Promise.reject(new Error('Sessao expirada'));
+        }
+        return response;
     }
 
-    function atualizarContadorCarrinho() {
+    async function atualizarContadorCarrinho() {
         if (!usuarioId || !contadorCarrinhoSpan) return;
 
-        fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(res => res.ok ? res.json() : [])
-            .then(lista => contadorCarrinhoSpan.textContent = lista.length)
-            .catch(() => contadorCarrinhoSpan.textContent = 0);
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
+            if (response.ok) {
+                const lista = await response.json();
+                contadorCarrinhoSpan.textContent = lista.length;
+            }
+        } catch (error) {
+            contadorCarrinhoSpan.textContent = 0;
+        }
     }
 
     async function carregarLivrosRecentes() {
@@ -47,8 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
             tbody.innerHTML = '';
 
             const livrosFiltrados = livros.filter(l => {
-                if (!usuarioId) return true;
-                return l.proprietario && l.proprietario.id != usuarioId;
+                const naoEhMeu = !l.proprietario || l.proprietario.id != usuarioId;
+                const estaDisponivel = l.status === 'DISPONIVEL';
+                return naoEhMeu && estaDisponivel;
             });
 
             if (livrosFiltrados.length === 0) {
@@ -70,25 +89,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbody.appendChild(tr);
             });
         } catch (error) {
-            console.error(error);
+            tbody.innerHTML = '<tr><td colspan="5">Erro ao carregar livros.</td></tr>';
         }
     }
 
-    function adicionarAoCarrinho(livroId) {
+    async function adicionarAoCarrinho(livroId) {
         if (!usuarioId) {
             window.location.href = 'login.html';
             return;
         }
-        fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, { method: 'POST' })
-            .then(res => {
-                if(res.ok) {
-                    alert("Adicionado ao carrinho!");
-                    atualizarContadorCarrinho();
-                    carregarLivrosRecentes();
-                } else {
-                    alert("Erro ao adicionar.");
-                }
-            });
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, { method: 'POST' });
+
+            if(response.ok) {
+                alert("Adicionado ao carrinho!");
+                atualizarContadorCarrinho();
+                carregarLivrosRecentes();
+            } else {
+                throw new Error("Erro ao adicionar.");
+            }
+        } catch (error) {
+            alert("Nao foi possivel adicionar ao carrinho.");
+        }
     }
 
     if (tbody) {

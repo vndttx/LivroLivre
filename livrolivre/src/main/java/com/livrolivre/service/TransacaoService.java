@@ -29,8 +29,9 @@ public class TransacaoService {
     @Autowired
     private LivroRepository livroRepository;
 
+    // CORREÇÃO: Alterado de void para Transacao para que o Controller receba o objeto salvo
     @Transactional
-    public void finalizarDoacao(Usuario solicitante, Long livroId) {
+    public Transacao finalizarDoacao(Usuario solicitante, Long livroId) {
         Livro livroDoado = livroRepository.findById(livroId)
                 .orElseThrow(() -> new IllegalArgumentException("Livro para doacao nao encontrado"));
 
@@ -45,18 +46,24 @@ public class TransacaoService {
         transacao.setTipo(TipoTransacao.DOACAO);
         transacao.setStatus(StatusTransacao.CONCLUIDA);
         transacao.setData(LocalDateTime.now());
-        transacaoRepository.save(transacao);
 
+        // Salva a transação
+        Transacao transacaoSalva = transacaoRepository.save(transacao);
+
+        // Atualiza o livro (Doação = Indisponível/Estoque 0 pois saiu do sistema ou foi consumido)
         livroDoado.setStatus(StatusLivro.INDISPONIVEL);
         livroDoado.setEstoque(0);
         livroRepository.save(livroDoado);
 
+        // Remove do carrinho do solicitante
         carrinhoRepository.deleteByUsuarioAndLivro(solicitante, livroDoado);
+
+        return transacaoSalva; // Retorna o objeto salvo
     }
 
     public List<Transacao> buscarHistoricoPorUsuario(Long usuarioId) {
-    return transacaoRepository.findHistoricoCompleto(usuarioId);
-}
+        return transacaoRepository.findHistoricoCompleto(usuarioId);
+    }
 
     @Transactional
     public Transacao proporTroca(Long livroSolicitadoId, Long livroOfertadoId, Usuario solicitante) {
@@ -77,6 +84,7 @@ public class TransacaoService {
             throw new IllegalStateException("Voce nao pode trocar um livro com voce mesmo.");
         }
 
+        // Reserva os livros para evitar que outra pessoa pegue durante a negociação
         livroSolicitado.setStatus(StatusLivro.TRANSACAO_PENDENTE);
         livroOfertado.setStatus(StatusLivro.TRANSACAO_PENDENTE);
         livroRepository.save(livroSolicitado);
@@ -95,12 +103,12 @@ public class TransacaoService {
     }
 
     public List<Transacao> buscarOfertasRecebidas(Usuario proprietario) {
-    return transacaoRepository.buscarOfertasRecebidas(
-            proprietario,
-            TipoTransacao.TROCA,
-            StatusTransacao.PENDENTE // Mantem o status pendente para ofertas
-    );
-}
+        return transacaoRepository.buscarOfertasRecebidas(
+                proprietario,
+                TipoTransacao.TROCA,
+                StatusTransacao.PENDENTE
+        );
+    }
 
     @Transactional
     public Transacao aceitarTroca(Long transacaoId, Usuario usuarioLogado) {
@@ -120,9 +128,11 @@ public class TransacaoService {
         Usuario solicitante = transacao.getSolicitante();
         Usuario proprietario = transacao.getProprietario();
 
+        // A Mágica da Troca: Inverte os proprietários
         livroSolicitado.setProprietario(solicitante);
         livroOfertado.setProprietario(proprietario);
 
+        // Libera os livros para os novos donos
         livroSolicitado.setStatus(StatusLivro.DISPONIVEL);
         livroOfertado.setStatus(StatusLivro.DISPONIVEL);
 
@@ -148,6 +158,7 @@ public class TransacaoService {
         Livro livroSolicitado = transacao.getLivroSolicitado();
         Livro livroOfertado = transacao.getLivroOfertado();
 
+        // Libera os livros de volta para os donos originais
         livroSolicitado.setStatus(StatusLivro.DISPONIVEL);
         livroOfertado.setStatus(StatusLivro.DISPONIVEL);
 

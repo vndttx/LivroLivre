@@ -6,14 +6,12 @@ import com.livrolivre.model.enums.StatusLivro;
 import com.livrolivre.repository.UsuarioRepository;
 import com.livrolivre.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/livros")
@@ -32,36 +30,36 @@ public class LivroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Livro> buscarPorId(@PathVariable Long id) {
-        Optional<Livro> livro = livroService.buscarPorId(id);
-        return livro.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return livroService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Void> salvar(@RequestBody Livro livro, Principal principal) {
-        String nomeUsuario = principal.getName();
-
-        Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
+    public ResponseEntity<Livro> cadastrar(@RequestBody Livro livro, Principal principal) {
+        Usuario proprietario = usuarioRepository.findByNomeUsuario(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
 
         livro.setProprietario(proprietario);
+        // Garante que o status inicial seja DISPONIVEL se nao vier preenchido
+        if (livro.getStatus() == null) {
+            livro.setStatus(StatusLivro.DISPONIVEL);
+        }
 
-
-        livroService.salvar(livro);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Livro novoLivro = livroService.salvar(livro);
+        return ResponseEntity.ok(novoLivro);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable Long id) {
         livroService.remover(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/meus-livros")
-    public ResponseEntity<List<Livro>> getMeusLivros(Principal principal) {
-        String nomeUsuario = principal.getName();
-        Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
+    public ResponseEntity<List<Livro>> listarMeusLivros(Principal principal) {
+        Usuario proprietario = usuarioRepository.findByNomeUsuario(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
 
         List<Livro> meusLivros = livroService.buscarPorProprietario(proprietario);
         return ResponseEntity.ok(meusLivros);

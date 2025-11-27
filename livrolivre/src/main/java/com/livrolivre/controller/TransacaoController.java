@@ -8,8 +8,8 @@ import com.livrolivre.service.TransacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.security.Principal;
 import java.util.List;
@@ -25,75 +25,53 @@ public class TransacaoController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/finalizar/{livroId}")
-    public ResponseEntity<Void> finalizarTransacao(@PathVariable Long livroId, Principal principal) {
-    String nomeUsuario = principal.getName();
-    Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
-            .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
-
-    try {
-        transacaoService.finalizarDoacao(solicitante, livroId);
-        return ResponseEntity.noContent().build();
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<Transacao> finalizarDoacao(@PathVariable Long livroId, Principal principal) {
+        Usuario solicitante = getUsuarioLogado(principal);
+        Transacao transacao = transacaoService.finalizarDoacao(solicitante, livroId);
+        return ResponseEntity.ok(transacao);
     }
-}
 
-    @GetMapping("/meu-historico")
-    public ResponseEntity<List<Transacao>> getMeuHistorico(Principal principal) {
-        String nomeUsuario = principal.getName();
-        Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
-        List<Transacao> historico = transacaoService.buscarHistoricoPorUsuario(solicitante.getId());
+    @GetMapping("/historico")
+    public ResponseEntity<List<Transacao>> buscarHistorico(Principal principal) {
+        Usuario usuario = getUsuarioLogado(principal);
+        List<Transacao> historico = transacaoService.buscarHistoricoPorUsuario(usuario.getId());
         return ResponseEntity.ok(historico);
     }
 
     @PostMapping("/propor-troca")
-    public ResponseEntity<Void> proporTroca(@RequestBody PropostaTrocaDTO proposta, Principal principal) {
-             String nomeUsuario = principal.getName();
-            Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
-            Transacao novaProposta = transacaoService.proporTroca(
-                    proposta.getLivroSolicitadoId(),
-                    proposta.getLivroOfertadoId(),
-                    solicitante);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Transacao> proporTroca(@RequestBody PropostaTrocaDTO proposta, Principal principal) {
+        Usuario solicitante = getUsuarioLogado(principal);
+        Transacao transacao = transacaoService.proporTroca(
+                proposta.getLivroSolicitadoId(),
+                proposta.getLivroOfertadoId(),
+                solicitante
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(transacao);
     }
 
     @GetMapping("/ofertas-recebidas")
     public ResponseEntity<List<Transacao>> buscarOfertasRecebidas(Principal principal) {
-        String nomeUsuario = principal.getName();
-
-        Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
-
+        Usuario proprietario = getUsuarioLogado(principal);
         List<Transacao> ofertas = transacaoService.buscarOfertasRecebidas(proprietario);
-
         return ResponseEntity.ok(ofertas);
     }
 
     @PostMapping("/{id}/aceitar")
-    public ResponseEntity<?> aceitarTroca(@PathVariable Long id, Principal principal) {
-        try {
-            String nomeUsuario = principal.getName();
-            Usuario usuarioLogado = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
-            Transacao transacao = transacaoService.aceitarTroca(id, usuarioLogado);
-            return ResponseEntity.ok(transacao);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Transacao> aceitarTroca(@PathVariable Long id, Principal principal) {
+        Usuario usuario = getUsuarioLogado(principal);
+        Transacao transacao = transacaoService.aceitarTroca(id, usuario);
+        return ResponseEntity.ok(transacao);
     }
 
     @PostMapping("/{id}/recusar")
-    public ResponseEntity<?> recusarTroca(@PathVariable Long id, Principal principal) {
-        try {
-            String nomeUsuario = principal.getName();
-            Usuario usuarioLogado = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
-            Transacao transacao = transacaoService.recusarTroca(id, usuarioLogado);
-            return ResponseEntity.ok(transacao);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Transacao> recusarTroca(@PathVariable Long id, Principal principal) {
+        Usuario usuario = getUsuarioLogado(principal);
+        Transacao transacao = transacaoService.recusarTroca(id, usuario);
+        return ResponseEntity.ok(transacao);
+    }
+
+    private Usuario getUsuarioLogado(Principal principal) {
+        return usuarioRepository.findByNomeUsuario(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
     }
 }

@@ -16,21 +16,54 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = 'login.html';
-        });
-    }
-
-    function fetchWithAuth(url, options = {}) {
+    async function fetchWithAuth(url, options = {}) {
         const token = localStorage.getItem('jwtToken');
         const headers = { 'Content-Type': 'application/json', ...options.headers };
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        return fetch(url, { ...options, headers });
+        const response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.clear();
+            alert('Sessao expirada.');
+            window.location.href = 'login.html';
+            return Promise.reject(new Error('Sessao expirada'));
+        }
+        return response;
+    }
+
+    async function adicionarAoCarrinho(id) {
+        try {
+            const response = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${id}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                alert('Livro adicionado ao carrinho!');
+            } else {
+                throw new Error('Erro ao adicionar.');
+            }
+        } catch (error) {
+            alert('Nao foi possivel adicionar ao carrinho.');
+        }
+    }
+
+    function renderizarAcoes(livro) {
+        const acoesContainer = document.getElementById('acoes-container');
+        if (livro.proprietario.id != usuarioId && livro.status === 'DISPONIVEL') {
+            acoesContainer.innerHTML = `
+                <button class="btn" id="btn-add-carrinho">Adicionar ao Carrinho</button>
+            `;
+            const btnAdd = document.getElementById('btn-add-carrinho');
+            if (btnAdd) {
+                btnAdd.addEventListener('click', () => adicionarAoCarrinho(livro.id));
+            }
+        } else if (livro.proprietario.id == usuarioId) {
+             acoesContainer.innerHTML = `<p>Este livro pertence a voce.</p>`;
+        } else {
+             acoesContainer.innerHTML = `<p>Este livro nao esta disponivel no momento.</p>`;
+        }
     }
 
     async function carregarDetalhes() {
@@ -57,22 +90,18 @@ document.addEventListener('DOMContentLoaded', () => {
             renderizarAcoes(livro);
 
         } catch (error) {
-            console.error('Erro ao carregar detalhes:', error);
             detalhesContainer.innerHTML = `<p>${error.message}</p>`;
         }
     }
 
-    function renderizarAcoes(livro) {
-        const acoesContainer = document.getElementById('acoes-container');
-        if (livro.proprietario.id != usuarioId && livro.status === 'DISPONIVEL') {
-            acoesContainer.innerHTML = `
-                <button class="btn" id="btn-add-carrinho" data-id="${livro.id}">Adicionar ao Carrinho</button>
-            `;
-        } else if (livro.proprietario.id == usuarioId) {
-             acoesContainer.innerHTML = `<p>Este livro pertence a voce.</p>`;
-        } else {
-             acoesContainer.innerHTML = `<p>Este livro nao esta disponivel no momento.</p>`;
-        }
+    if (btnSair) {
+        btnSair.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            alert('Voce saiu com sucesso.');
+            window.location.href = 'login.html';
+            return;
+        });
     }
 
     carregarDetalhes();

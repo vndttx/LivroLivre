@@ -27,7 +27,6 @@ public class UsuarioService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 2. Este é o método que o Spring Security vai usar
     @Override
     public UserDetails loadUserByUsername(String nomeUsuario) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.findByNomeUsuario(nomeUsuario)

@@ -33,6 +33,6 @@ public class LivroService {
     }
 
     public List<Livro> buscarPorProprietario(Usuario proprietario) {
-        return livroRepository.findByProprietarioAndStatus(proprietario, StatusLivro.DISPONIVEL);
+        return livroRepository.findByProprietario(proprietario);
     }
 }

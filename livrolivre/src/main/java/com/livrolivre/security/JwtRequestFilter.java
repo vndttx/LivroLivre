@@ -40,9 +40,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Nao foi possivel obter o token JWT");
+                // Falha ao obter o token (ex: token malformado). O filter continua, mas nao autenticado.
             } catch (ExpiredJwtException e) {
-                System.out.println("O token JWT expirou");
+                // Token expirou. O filter continua, mas nao autenticado.
             }
         }
 

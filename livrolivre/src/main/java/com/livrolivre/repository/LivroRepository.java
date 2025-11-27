@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface LivroRepository extends JpaRepository<Livro, Long> {
-
+    List<Livro> findByProprietario(Usuario proprietario);
     List<Livro> findByProprietarioAndStatus(Usuario proprietario, StatusLivro status);
     List<Livro> findByStatus(StatusLivro status);
 }
