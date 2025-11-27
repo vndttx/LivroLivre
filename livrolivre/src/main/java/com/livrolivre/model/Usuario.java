@@ -3,6 +3,8 @@ package com.livrolivre.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString; // Importe isso
+import lombok.EqualsAndHashCode; // Importe isso
 
 import java.util.List;
 
@@ -23,5 +25,7 @@ public class Usuario {
 
     @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude // <--- ADICIONE
+    @EqualsAndHashCode.Exclude // <--- ADICIONE
     private List<Livro> livros;
 }

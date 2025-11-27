@@ -37,7 +37,7 @@ public class LivroController {
     }
 
     @PostMapping
-    public ResponseEntity<Livro> salvar(@RequestBody Livro livro, Principal principal) {
+    public ResponseEntity<Void> salvar(@RequestBody Livro livro, Principal principal) {
         String nomeUsuario = principal.getName();
         Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
@@ -45,8 +45,9 @@ public class LivroController {
         livro.setProprietario(proprietario);
         livro.setStatus(StatusLivro.DISPONIVEL);
 
-        Livro livroSalvo = livroService.salvar(livro);
-        return new ResponseEntity<>(livroSalvo, HttpStatus.CREATED);
+        livroService.salvar(livro);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{id}")

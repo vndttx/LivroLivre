@@ -30,7 +30,7 @@ public class CarrinhoController {
         return ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping("/remover/{itemId}")
+    @DeleteMapping("/{usuarioId}/remover/{livroId}")
     public ResponseEntity<Void> removerItemCarrinho(@PathVariable Long itemId) {
         if (carrinhoService.removerItemCarrinho(itemId)) {
             return ResponseEntity.ok().build();

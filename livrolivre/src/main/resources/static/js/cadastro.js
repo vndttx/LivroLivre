@@ -6,7 +6,6 @@ document.getElementById('cadastro-form').addEventListener('submit', function(eve
         autor: document.getElementById('autor').value,
         genero: document.getElementById('genero').value,
         tipo: document.getElementById('tipo').value,
-        isbn: document.getElementById('isbn').value,
         status: document.getElementById('status').value
     };
 

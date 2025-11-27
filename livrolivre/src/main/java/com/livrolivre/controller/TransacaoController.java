@@ -24,24 +24,25 @@ public class TransacaoController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping("/finalizar/{livroId}")
-    public ResponseEntity<?> finalizarTransacao(@PathVariable Long livroId, Principal principal) {
-        String nomeUsuario = principal.getName();
-        Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
-        try {
-            Transacao novaTransacao = transacaoService.finalizarDoacao(solicitante, livroId);
-            return ResponseEntity.ok(novaTransacao);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Void> finalizarTransacao(@PathVariable Long livroId, Principal principal) {
+    String nomeUsuario = principal.getName();
+    Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
+
+    try {
+        transacaoService.finalizarDoacao(solicitante, livroId);
+        return ResponseEntity.noContent().build();
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
     }
+}
 
     @GetMapping("/meu-historico")
     public ResponseEntity<List<Transacao>> getMeuHistorico(Principal principal) {
         String nomeUsuario = principal.getName();
         Usuario solicitante = usuarioRepository.findByNomeUsuario(nomeUsuario)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
-        List<Transacao> historico = transacaoService.buscarHistoricoPorUsuario(solicitante);
+        List<Transacao> historico = transacaoService.buscarHistoricoPorUsuario(solicitante.getId());
         return ResponseEntity.ok(historico);
     }
 

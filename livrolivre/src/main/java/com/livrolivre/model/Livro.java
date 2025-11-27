@@ -3,6 +3,8 @@ package com.livrolivre.model;
 import com.livrolivre.model.enums.StatusLivro;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -23,5 +25,7 @@ public class Livro {
 
     @ManyToOne
     @JoinColumn(name = "proprietario_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Usuario proprietario;
 }

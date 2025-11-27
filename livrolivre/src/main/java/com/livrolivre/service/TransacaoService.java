@@ -1,6 +1,5 @@
 package com.livrolivre.service;
 
-import com.livrolivre.model.Carrinho;
 import com.livrolivre.model.Livro;
 import com.livrolivre.model.Transacao;
 import com.livrolivre.model.Usuario;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TransacaoService {
@@ -32,7 +30,7 @@ public class TransacaoService {
     private LivroRepository livroRepository;
 
     @Transactional
-    public Transacao finalizarDoacao(Usuario solicitante, Long livroId) {
+    public void finalizarDoacao(Usuario solicitante, Long livroId) {
         Livro livroDoado = livroRepository.findById(livroId)
                 .orElseThrow(() -> new IllegalArgumentException("Livro para doacao nao encontrado"));
 
@@ -54,13 +52,11 @@ public class TransacaoService {
         livroRepository.save(livroDoado);
 
         carrinhoRepository.deleteByUsuarioAndLivro(solicitante, livroDoado);
-
-        return transacao;
     }
 
-    public List<Transacao> buscarHistoricoPorUsuario(Usuario usuario) {
-        return transacaoRepository.findBySolicitanteOrderByDataDesc(usuario);
-    }
+    public List<Transacao> buscarHistoricoPorUsuario(Long usuarioId) {
+    return transacaoRepository.findHistoricoCompleto(usuarioId);
+}
 
     @Transactional
     public Transacao proporTroca(Long livroSolicitadoId, Long livroOfertadoId, Usuario solicitante) {
@@ -99,12 +95,12 @@ public class TransacaoService {
     }
 
     public List<Transacao> buscarOfertasRecebidas(Usuario proprietario) {
-        return transacaoRepository.findByProprietarioAndTipoAndStatusOrderByDataDesc(
-                proprietario,
-                TipoTransacao.TROCA,
-                StatusTransacao.PENDENTE
-        );
-    }
+    return transacaoRepository.buscarOfertasRecebidas(
+            proprietario,
+            TipoTransacao.TROCA,
+            StatusTransacao.PENDENTE // Mantem o status pendente para ofertas
+    );
+}
 
     @Transactional
     public Transacao aceitarTroca(Long transacaoId, Usuario usuarioLogado) {

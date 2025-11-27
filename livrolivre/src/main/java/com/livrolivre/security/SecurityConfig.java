@@ -56,8 +56,13 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/favicon.ico"
                         ).permitAll()
+                        .requestMatchers("/api/carrinho/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/carrinho/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/carrinho/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/carrinho/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

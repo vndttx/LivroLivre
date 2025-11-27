@@ -1,12 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const tbody = document.querySelector('#livros-recentes-tabela tbody');
-    const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const usuarioId = localStorage.getItem('usuarioId');
-    const btnSair = document.getElementById('btn-sair');
+    const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
+    const btnSair = document.getElementById("btn-sair");
+    const tbody = document.querySelector('#livros-recentes-tabela tbody');
+
+    if (btnSair) {
+        btnSair.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            alert("Voce saiu com sucesso.");
+            window.location.href = 'login.html';
+        });
+    }
 
     if (!usuarioId) {
         window.location.href = 'login.html';
-        return;
     }
 
     function fetchWithAuth(url, options = {}) {
@@ -15,94 +23,83 @@ document.addEventListener('DOMContentLoaded', () => {
             'Content-Type': 'application/json',
             ...options.headers
         };
-
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
+        if (token) headers['Authorization'] = `Bearer ${token}`;
         return fetch(url, { ...options, headers });
     }
 
     function atualizarContadorCarrinho() {
+        if (!usuarioId || !contadorCarrinhoSpan) return;
+
         fetchWithAuth(`/api/carrinho/${usuarioId}`)
-            .then(response => response.ok ? response.json() : Promise.reject('Erro'))
-            .then(carrinho => {
-                contadorCarrinhoSpan.textContent = carrinho.length;
-            })
-            .catch(() => {
-                contadorCarrinhoSpan.textContent = 0;
-            });
+            .then(res => res.ok ? res.json() : [])
+            .then(lista => contadorCarrinhoSpan.textContent = lista.length)
+            .catch(() => contadorCarrinhoSpan.textContent = 0);
     }
 
     async function carregarLivrosRecentes() {
+        if (!tbody) return;
+
         try {
-            const response = await fetchWithAuth('/api/livros');
-            if (!response.ok) {
-                throw new Error('Erro ao buscar os livros.');
-            }
+            const response = await fetch('/api/livros');
+            if (!response.ok) throw new Error('Erro ao buscar livros');
+
             const livros = await response.json();
             tbody.innerHTML = '';
 
-            if (livros.length === 0) {
-                 tbody.innerHTML = '<tr><td colspan="5">Nenhum livro encontrado.</td></tr>';
-                 return;
+            const livrosFiltrados = livros.filter(l => {
+                if (!usuarioId) return true;
+                return l.proprietario && l.proprietario.id != usuarioId;
+            });
+
+            if (livrosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Nenhum livro recente disponivel.</td></tr>';
+                return;
             }
 
-            livros.forEach(livro => {
-                if (livro.proprietario && livro.proprietario.id != usuarioId) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${livro.titulo}</td>
-                        <td>${livro.autor}</td>
-                        <td>${livro.genero || '-'}</td>
-                        <td>${livro.status || 'Disponivel'}</td>
-                        <td>
-                            <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar ao carrinho</a>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                }
+            livrosFiltrados.slice(0, 5).forEach(livro => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${livro.titulo}</td>
+                    <td>${livro.autor}</td>
+                    <td>${livro.genero || '-'}</td>
+                    <td>${livro.status}</td>
+                    <td>
+                         <a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar</a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
         } catch (error) {
-            console.error('Erro:', error);
-            tbody.innerHTML = '<tr><td colspan="5">Nao foi possivel carregar os livros.</td></tr>';
+            console.error(error);
         }
     }
 
-    function adicionarLivroAoCarrinho(livroId) {
-        fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, {
-            method: 'POST'
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Falha ao adicionar.');
-            return response.json();
-        })
-        .then(data => {
-            alert(`"${data.titulo}" foi adicionado ao carrinho!`);
-            carregarLivrosRecentes();
-            atualizarContadorCarrinho();
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Nao foi possivel adicionar o livro.');
+    function adicionarAoCarrinho(livroId) {
+        if (!usuarioId) {
+            window.location.href = 'login.html';
+            return;
+        }
+        fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, { method: 'POST' })
+            .then(res => {
+                if(res.ok) {
+                    alert("Adicionado ao carrinho!");
+                    atualizarContadorCarrinho();
+                    carregarLivrosRecentes();
+                } else {
+                    alert("Erro ao adicionar.");
+                }
+            });
+    }
+
+    if (tbody) {
+        tbody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('adicionar-carrinho')) {
+                e.preventDefault();
+                adicionarAoCarrinho(e.target.getAttribute('data-id'));
+            }
         });
+        carregarLivrosRecentes();
     }
 
-    tbody.addEventListener('click', (event) => {
-        if (event.target.classList.contains('adicionar-carrinho')) {
-            event.preventDefault();
-            const livroId = event.target.getAttribute('data-id');
-            adicionarLivroAoCarrinho(livroId);
-        }
-    });
-
-    if (btnSair) {
-                    btnSair.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        localStorage.clear();
-                        alert("Voce saiu com sucesso.");
-                        window.location.href = 'login.html';
-                    });
-        }
     atualizarContadorCarrinho();
 });
