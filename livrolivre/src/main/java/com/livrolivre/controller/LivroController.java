@@ -39,11 +39,12 @@ public class LivroController {
     @PostMapping
     public ResponseEntity<Void> salvar(@RequestBody Livro livro, Principal principal) {
         String nomeUsuario = principal.getName();
+
         Usuario proprietario = usuarioRepository.findByNomeUsuario(nomeUsuario)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado: " + nomeUsuario));
 
         livro.setProprietario(proprietario);
-        livro.setStatus(StatusLivro.DISPONIVEL);
+
 
         livroService.salvar(livro);
 
@@ -52,8 +53,8 @@ public class LivroController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        livroService.deletar(id);
-        return ResponseEntity.noContent().build();
+        livroService.remover(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/meus-livros")

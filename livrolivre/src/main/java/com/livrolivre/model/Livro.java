@@ -17,11 +17,13 @@ public class Livro {
 
     private String titulo;
     private String autor;
+    @Column(nullable = true)
     private String genero;
-    private int estoque;
+    private Integer estoque;
 
     @Enumerated(EnumType.STRING)
     private StatusLivro status;
+
 
     @ManyToOne
     @JoinColumn(name = "proprietario_id")

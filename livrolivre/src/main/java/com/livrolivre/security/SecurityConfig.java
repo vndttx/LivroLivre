@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -35,12 +33,16 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+
+                        // 1. ROTAS PÚBLICAS (Login, Cadastro de Usuário e Leitura do Catálogo)
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/autenticacao/login",
                                 "/api/usuarios"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll() // CATÁLOGO PÚBLICO CORRIGIDO
+
+                        // 2. ARQUIVOS ESTÁTICOS (HTML, CSS, JS)
                         .requestMatchers(
                                 "/",
                                 "/index.html",
@@ -53,16 +55,25 @@ public class SecurityConfig {
                                 "/historico.html",
                                 "/ofertas.html",
                                 "/css/**",
-                                "/js/**",
-                                "/favicon.ico"
+                                "/js/**"
                         ).permitAll()
+
+                        // 3. ROTAS AUTENTICADAS (Escrita e Transações)
+
+                        // POST/DELETE/GET para CARRINHO (Adicionar/Remover/Ver)
                         .requestMatchers("/api/carrinho/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/carrinho/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/carrinho/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/carrinho/**").authenticated()
+
+                        // POST/GET/DELETE para LIVROS (Cadastrar/Remover Catálogo Próprio)
+                        .requestMatchers(HttpMethod.POST, "/api/livros").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/livros/**").authenticated()
+
+                        // POST/GET para TRANSAÇÕES (Pedir Doação, Propor Troca, Ver Histórico)
+                        .requestMatchers(HttpMethod.POST, "/api/transacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/transacoes/**").authenticated()
+
+                        // 4. Qualquer outra requisição exige autenticação
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

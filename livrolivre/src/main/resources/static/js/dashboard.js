@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const btnSair = document.getElementById("btn-sair");
 
-    // Elementos das tabelas
     const tabelaHistorico = document.querySelector('#tabela-historico tbody'); // Verifique se o ID no HTML é este
     const tabelaMeusLivros = document.querySelector('#tabela-meus-livros tbody'); // Verifique se o ID no HTML é este
 
@@ -20,15 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         return fetch(url, { ...options, headers });
-    }
-
-    if (btnSair) {
-        btnSair.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            alert("Voce saiu do sistema.");
-            window.location.href = 'login.html';
-        });
     }
 
     function atualizarContador() {
@@ -141,6 +131,15 @@ async function carregarMeusLivros() {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    if (btnSair) {
+            btnSair.addEventListener('click', (event) => {
+                event.preventDefault();
+                localStorage.clear();
+                alert("Voce saiu com sucesso.");
+                window.location.href = 'login.html';
+            });
     }
 
     atualizarContador();

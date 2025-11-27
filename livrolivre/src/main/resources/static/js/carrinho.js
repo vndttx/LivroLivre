@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(text || 'Falha ao solicitar a doacao.') });
                 }
-                return response.json();
+                return;
             })
-            .then(transacao => {
+            .then(() => {
                 alert('Doacao solicitada com sucesso!');
                 carregarCarrinho();
             })
@@ -151,9 +151,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) return response.text().then(text => { throw new Error(text) });
-            return response.json();
+            return;
         })
-        .then(transacao => {
+        .then(() => {
             alert('Proposta de troca enviada com sucesso!');
             fecharModal();
             carregarCarrinho();

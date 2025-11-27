@@ -25,7 +25,7 @@ public class Usuario {
 
     @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    @ToString.Exclude // <--- ADICIONE
-    @EqualsAndHashCode.Exclude // <--- ADICIONE
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Livro> livros;
 }

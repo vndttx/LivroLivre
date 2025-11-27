@@ -31,8 +31,11 @@ public class CarrinhoController {
     }
 
     @DeleteMapping("/{usuarioId}/remover/{livroId}")
-    public ResponseEntity<Void> removerItemCarrinho(@PathVariable Long itemId) {
-        if (carrinhoService.removerItemCarrinho(itemId)) {
+    public ResponseEntity<Void> removerItemCarrinho(
+            @PathVariable Long usuarioId,
+            @PathVariable Long livroId
+    ) {
+        if (carrinhoService.removerItemCarrinho(usuarioId, livroId)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

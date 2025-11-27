@@ -42,8 +42,21 @@ public class CarrinhoService {
         return null;
     }
 
-    public boolean removerItemCarrinho(Long itemId) {
-        Optional<Carrinho> item = carrinhoRepository.findById(itemId);
+    public boolean removerItemCarrinho(Long usuarioId, Long livroId) {
+        // 1. Busca as entidades
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioId);
+        Optional<Livro> livroOpt = livroRepository.findById(livroId);
+
+        if (usuarioOpt.isEmpty() || livroOpt.isEmpty()) {
+            return false;
+        }
+
+        // 2. Busca o item no carrinho usando o método findByUsuarioAndLivro (no Repository)
+        Optional<Carrinho> item = carrinhoRepository.findByUsuarioAndLivro(
+                usuarioOpt.get(),
+                livroOpt.get()
+        );
+
         if (item.isPresent()) {
             carrinhoRepository.delete(item.get());
             return true;
