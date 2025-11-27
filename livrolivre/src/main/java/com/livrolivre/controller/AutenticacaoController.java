@@ -1,55 +1,55 @@
 package com.livrolivre.controller;
-import com.livrolivre.model.Usuario;
+
+import com.livrolivre.controller.dto.LoginRequest;
 import com.livrolivre.security.JwtTokenUtil;
 import com.livrolivre.security.LoginResponse;
 import com.livrolivre.service.UsuarioService;
+import com.livrolivre.repository.UsuarioRepository;
+import com.livrolivre.model.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
-
-import org.springframework.security.core.AuthenticationException;
-import com.livrolivre.controller.dto.LoginRequest;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/autenticacao")
 public class AutenticacaoController {
 
     private final AuthenticationManager authenticationManager;
-
     private final UsuarioService usuarioService;
-
     private final JwtTokenUtil jwtTokenUtil;
+    private final UsuarioRepository usuarioRepository;
 
-    public AutenticacaoController(AuthenticationManager authenticationManager, UsuarioService usuarioService, JwtTokenUtil jwtTokenUtil) {
+    @Autowired
+    public AutenticacaoController(
+            AuthenticationManager authenticationManager,
+            UsuarioService usuarioService,
+            JwtTokenUtil jwtTokenUtil,
+            UsuarioRepository usuarioRepository) {
         this.authenticationManager = authenticationManager;
         this.usuarioService = usuarioService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    @PostMapping("/api/autenticacao/login")
-    public ResponseEntity<?> autenticarUsuario(@RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getNomeUsuario(), loginRequest.getSenha())
-            );
+    @PostMapping("/login")
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws Exception {
 
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            Usuario usuario = usuarioService.buscarPorNomeUsuario(userDetails.getUsername())
-                    .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getNomeUsuario(), loginRequest.getSenha())
+        );
 
-            String jwt = jwtTokenUtil.generateToken(userDetails);
+        final UserDetails userDetails = usuarioService.loadUserByUsername(loginRequest.getNomeUsuario());
 
-            return ResponseEntity.ok(new LoginResponse(jwt, usuario.getId()));
+        Usuario usuario = usuarioRepository.findByNomeUsuario(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação."));
 
-        } catch (AuthenticationException e) {
-            String mensagem = "Usuario ou senha incorreta.";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mensagem);
-        }
+        final String token = jwtTokenUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(new LoginResponse(token, usuario.getId()));
     }
 }

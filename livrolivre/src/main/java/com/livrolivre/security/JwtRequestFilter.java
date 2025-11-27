@@ -2,6 +2,7 @@ package com.livrolivre.security;
 
 import com.livrolivre.service.UsuarioService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,12 +38,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                // Falha ao obter o token (ex: token malformado). O filter continua, mas nao autenticado.
-            } catch (ExpiredJwtException e) {
-                // Token expirou. O filter continua, mas nao autenticado.
+
+            if (jwtToken.length() > 0) {
+                try {
+                    username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                } catch (IllegalArgumentException | ExpiredJwtException | MalformedJwtException ignored) {
+                }
             }
         }
 
