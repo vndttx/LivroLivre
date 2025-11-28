@@ -3,6 +3,7 @@ package com.livrolivre.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +20,12 @@ public class JwtTokenUtil {
 
     public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60;
 
-    @Value("${jwt.secret:586E3272357538782F413F4428472B4B6250655368566D597133743677397A24}")
+    @Value("${jwt.secret:NTg2RTMwN...}")
     private String secret;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        byte[] keyBytes = Decoders.BASE64.decode(this.secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String getUsernameFromToken(String token) {
@@ -59,7 +61,7 @@ public class JwtTokenUtil {
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(getSigningKey())
                 .compact();
     }
 

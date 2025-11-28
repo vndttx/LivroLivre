@@ -6,9 +6,11 @@ import com.livrolivre.model.enums.StatusLivro;
 import com.livrolivre.repository.UsuarioRepository;
 import com.livrolivre.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -22,6 +24,14 @@ public class LivroController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private Usuario getUsuarioLogado(Principal principal) {
+        if (principal == null || principal.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado.");
+        }
+        return usuarioRepository.findByNomeUsuario(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+    }
 
     @GetMapping
     public List<Livro> listarTodos() {
@@ -37,11 +47,9 @@ public class LivroController {
 
     @PostMapping
     public ResponseEntity<Livro> cadastrar(@RequestBody Livro livro, Principal principal) {
-        Usuario proprietario = usuarioRepository.findByNomeUsuario(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+        Usuario proprietario = getUsuarioLogado(principal);
 
         livro.setProprietario(proprietario);
-        // Garante que o status inicial seja DISPONIVEL se nao vier preenchido
         if (livro.getStatus() == null) {
             livro.setStatus(StatusLivro.DISPONIVEL);
         }
@@ -58,8 +66,7 @@ public class LivroController {
 
     @GetMapping("/meus-livros")
     public ResponseEntity<List<Livro>> listarMeusLivros(Principal principal) {
-        Usuario proprietario = usuarioRepository.findByNomeUsuario(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+        Usuario proprietario = getUsuarioLogado(principal);
 
         List<Livro> meusLivros = livroService.buscarPorProprietario(proprietario);
         return ResponseEntity.ok(meusLivros);

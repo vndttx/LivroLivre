@@ -8,8 +8,9 @@ import com.livrolivre.service.TransacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.List;
@@ -23,6 +24,14 @@ public class TransacaoController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private Usuario getUsuarioLogado(Principal principal) {
+        if (principal == null || principal.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado.");
+        }
+        return usuarioRepository.findByNomeUsuario(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
+    }
 
     @PostMapping("/finalizar/{livroId}")
     public ResponseEntity<Transacao> finalizarDoacao(@PathVariable Long livroId, Principal principal) {
@@ -68,10 +77,5 @@ public class TransacaoController {
         Usuario usuario = getUsuarioLogado(principal);
         Transacao transacao = transacaoService.recusarTroca(id, usuario);
         return ResponseEntity.ok(transacao);
-    }
-
-    private Usuario getUsuarioLogado(Principal principal) {
-        return usuarioRepository.findByNomeUsuario(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
     }
 }

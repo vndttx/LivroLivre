@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (tituloPainel) {
-        tituloPainel.textContent = `Painel do Usuario ${usuarioId}`;
+        tituloPainel.textContent = `Meu Painel`;
     }
 
     async function fetchWithAuth(url, options = {}) {
