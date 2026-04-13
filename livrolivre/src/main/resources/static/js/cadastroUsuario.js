@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
 
             const usuario = {
-                nomeUsuario: document.getElementById('nome-usuario').value,
+                emailUsuario: document.getElementById('email-usuario').value,
                 senha: document.getElementById('senha').value
             };
 

@@ -3,9 +3,8 @@ package com.livrolivre.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString; // Importe isso
-import lombok.EqualsAndHashCode; // Importe isso
-
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import java.util.List;
 
 @Entity
@@ -17,8 +16,8 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nome_usuario", unique = true, nullable = false)
-    private String nomeUsuario;
+    @Column(email = "email_usuario", unique = true, nullable = false)
+    private String emailUsuario;
 
     @Column(nullable = false)
     private String senha;

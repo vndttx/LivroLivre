@@ -40,12 +40,12 @@ public class AutenticacaoController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) throws Exception {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getNomeUsuario(), loginRequest.getSenha())
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha())
         );
 
-        final UserDetails userDetails = usuarioService.loadUserByUsername(loginRequest.getNomeUsuario());
+        final UserDetails userDetails = usuarioService.loadUserByUsername(loginRequest.getEmail());
 
-        Usuario usuario = usuarioRepository.findByNomeUsuario(userDetails.getUsername())
+        Usuario usuario = usuarioRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado após autenticação."));
 
         final String token = jwtTokenUtil.generateToken(userDetails);

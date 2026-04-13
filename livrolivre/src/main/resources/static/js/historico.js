@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
 
                 const tituloLivro = t.livroSolicitado ? t.livroSolicitado.titulo : (t.livroOfertado ? t.livroOfertado.titulo : 'Livro removido');
-                const nomeDono = t.proprietario ? t.proprietario.nomeUsuario : 'Desconhecido';
+                const nomeDono = t.proprietario ? t.proprietario.emailUsuario : 'Desconhecido';
                 const dataFormatada = new Date(t.data).toLocaleDateString('pt-BR');
 
                 tr.innerHTML = `

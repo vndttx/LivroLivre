@@ -5,11 +5,11 @@ if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const nomeUsuario = document.getElementById('nome-usuario').value;
+            const emailUsuario = document.getElementById('email-usuario').value;
             const senha = document.getElementById('senha').value;
 
             const loginRequest = {
-                nomeUsuario: nomeUsuario,
+                emailUsuario: emailUsuario,
                 senha: senha
             };
 
@@ -33,6 +33,10 @@ if (loginForm) {
                 alert(error.message);
                 console.error('Erro de Login:', error);
             }
+            const data = await response.json();
+            localStorage.setItem('jwtToken', data.token);
+            localStorage.setItem('usuarioId', data.usuarioId);
+            window.location.href = 'index.html';
         });
     }
 });

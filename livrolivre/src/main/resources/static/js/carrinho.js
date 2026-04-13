@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             carrinho.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.livro.titulo} (Dono: ${item.livro.proprietario.nomeUsuario})</td>
+                    <td>${item.livro.titulo} (Dono: ${item.livro.proprietario.emailUsuario})</td>
                     <td>
                         <a href="#" class="pedir-doacao" data-livro-id="${item.livro.id}">Pedir Doacao</a>
                         <a href="#" class="propor-troca" data-livro-id="${item.livro.id}" data-livro-titulo="${item.livro.titulo}">Propor Troca</a>

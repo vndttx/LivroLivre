@@ -15,8 +15,8 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<?> cadastrarUsuario(@RequestBody Usuario usuario) {
-        if (usuarioService.buscarPorNomeUsuario(usuario.getNomeUsuario()).isPresent()) {
-            return ResponseEntity.badRequest().body("Nome de usuario ja existe.");
+        if (usuarioService.buscarPorEmail(usuario.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("E-mail de usuario ja cadastrado.");
         }
         Usuario novoUsuario = usuarioService.salvar(usuario);
         return ResponseEntity.ok(novoUsuario);

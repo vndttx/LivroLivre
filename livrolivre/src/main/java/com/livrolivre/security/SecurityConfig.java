@@ -31,36 +31,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/autenticacao/login",
-                                "/api/usuarios"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
-                        .requestMatchers(
-                                "/",
-                                "/index.html",
-                                "/login.html",
-                                "/cadastroUsuario.html",
-                                "/cadastroLivro.html",
-                                "/catalogo.html",
-                                "/carrinho.html",
-                                "/dashboard.html",
-                                "/historico.html",
-                                "/ofertas.html",
-                                "/css/**",
-                                "/js/**"
-                        ).permitAll()
-                        .requestMatchers("/api/carrinho/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/livros").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/livros/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/transacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/transacoes/**").authenticated()
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/autenticacao/**").permitAll()
+                        .requestMatchers("/login.html", "/js/**", "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

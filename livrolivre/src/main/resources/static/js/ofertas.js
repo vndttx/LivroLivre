@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ofertas.forEach(oferta => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${oferta.solicitante.nomeUsuario}</td>
+                    <td>${oferta.solicitante.emailUsuario}</td>
                     <td>${oferta.livroOfertado.titulo}</td>
                     <td>${oferta.livroSolicitado.titulo}</td>
                     <td>

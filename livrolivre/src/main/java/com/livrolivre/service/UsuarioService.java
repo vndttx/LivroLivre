@@ -13,14 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Optional;
 
-// 1. Adicionamos 'implements UserDetailsService'
 @Service
 public class UsuarioService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Usar injeção via construtor é uma prática recomendada
     @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
@@ -28,21 +26,20 @@ public class UsuarioService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String nomeUsuario) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByNomeUsuario(nomeUsuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o nome: " + nomeUsuario));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario não encontrado com o e-mail: " + email));
 
-        // Retorna um objeto User que o Spring Security entende
-        return new User(usuario.getNomeUsuario(), usuario.getSenha(), Collections.emptyList());
+        return new User(usuario.getEmailUsuario(), usuario.getSenha(), Collections.emptyList());
     }
 
     public Usuario salvar(Usuario usuario) {
-        // Criptografa a senha antes de salvar
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+
         return usuarioRepository.save(usuario);
     }
 
-    public Optional<Usuario> buscarPorNomeUsuario(String nomeUsuario) {
-        return usuarioRepository.findByNomeUsuario(nomeUsuario);
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 }

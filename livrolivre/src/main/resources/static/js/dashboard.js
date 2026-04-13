@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ofertas.forEach(oferta => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${oferta.solicitante ? oferta.solicitante.nomeUsuario : 'Usuario desconhecido'}</td>
+                    <td>${oferta.solicitante ? oferta.solicitante.emailUsuario : 'Usuario desconhecido'}</td>
                     <td>${oferta.livroOfertado ? oferta.livroOfertado.titulo : '-'}</td>
                     <td>${oferta.livroSolicitado ? oferta.livroSolicitado.titulo : '-'}</td>
                     <td>
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     descricaoLivros = t.livroSolicitado ? t.livroSolicitado.titulo : 'Livro desconhecido';
                 }
 
-                const donoOriginal = t.proprietario ? t.proprietario.nomeUsuario : '-';
+                const donoOriginal = t.proprietario ? t.proprietario.emailUsuario : '-';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
