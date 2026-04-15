@@ -30,7 +30,7 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario não encontrado com o e-mail: " + email));
 
-        return new User(usuario.getEmailUsuario(), usuario.getSenha(), Collections.emptyList());
+        return new User(usuario.getEmail(), usuario.getSenha(), Collections.emptyList());
     }
 
     public Usuario salvar(Usuario usuario) {
