@@ -27,8 +27,9 @@ public class AutenticacaoController {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private final UsuarioRepository usuarioRepository;
-    private final UsuarioService usuarioService;
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioService usuarioService;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     @Autowired

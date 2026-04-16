@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/", "/index.html", "/login.html", "/static/**", "/js/**", "/css/**", "/favicon.ico").permitAll();
+                    req.requestMatchers("/", "/index.html", "/cadastroUsuario.html", "/login.html", "/js/**", "/css/**").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/autenticacao/**").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll();
                     req.anyRequest().authenticated();
