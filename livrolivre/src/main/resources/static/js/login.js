@@ -5,38 +5,35 @@ if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const emailUsuario = document.getElementById('email-usuario').value;
-            const senha = document.getElementById('senha').value;
+            const dados = {
+                email: document.getElementById('email-usuario').value,
+                senha: document.getElementById('senha').value
+            };
 
             const loginRequest = {
-                emailUsuario: emailUsuario,
-                senha: senha
+                emailUsuario: dados.email,
+                senha: dados.senha
             };
 
             try {
                 const response = await fetch('/api/autenticacao/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(loginRequest)
+                    body: JSON.stringify({ email, senha })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem('jwtToken', data.jwt);
-                    localStorage.setItem('usuarioId', data.usuarioId);
+                    localStorage.setItem('token', data.token);
                     window.location.href = 'dashboard.html';
                 } else {
-                    const errorMessage = await response.text();
-                    throw new Error(errorMessage || "Erro desconhecido de autenticação.");
+                    const errorText = await response.text(); // Use response aqui dentro do else
+                    throw new Error(errorText);
                 }
             } catch (error) {
-                alert(error.message);
                 console.error('Erro de Login:', error);
+                alert('Erro ao realizar login. Verifique suas credenciais.');
             }
-            const data = await response.json();
-            localStorage.setItem('jwtToken', data.token);
-            localStorage.setItem('usuarioId', data.usuarioId);
-            window.location.href = 'index.html';
         });
     }
 });

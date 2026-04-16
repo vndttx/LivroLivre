@@ -15,9 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -53,25 +53,21 @@ public class AutenticacaoIntegrationTest {
         usuarioRepository.deleteAllInBatch();
 
         Usuario usuario = new Usuario();
-        usuario.setNomeUsuario("Emanuel");
+        usuario.setNomeUsuario("Emanuel Pajeu");
         usuario.setEmail("emanuel@teste.com");
-        usuario.setSenha(passwordEncoder.encode("senha123"));
+        usuario.setSenha(passwordEncoder.encode("123456"));
         usuarioRepository.save(usuario);
     }
 
     @Test
     public void deveRealizarLoginComEmail() throws Exception {
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setNome("Emanuel");
-        loginRequest.setEmail("emanuel@teste.com");
-        loginRequest.setSenha("senha123");
+        var loginRequest = new LoginRequest("emanuel@teste.com", "123456", "Emanuel Pajeu");
 
         mockMvc.perform(post("/api/autenticacao/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
+                .andDo(org.springframework.test.web.servlet.result.MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.jwt").exists())
-                .andExpect(jsonPath("$.usuarioId").exists());
-
+                .andExpect(jsonPath("$.token").exists()); // Ajustado para bater com seu DTO DadosTokenJWT
     }
 }

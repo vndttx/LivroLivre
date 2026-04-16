@@ -17,13 +17,12 @@ public class AutenticacaoController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/login")
-    public ResponseEntity efetuarLogin(@RequestBody @Valid LoginRequest dados) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(dados.getEmail(), dados.getSenha());
+    public ResponseEntity<?> efetuarLogin(@RequestBody @Valid LoginRequest dados) {
+        var authenticationToken = new UsernamePasswordAuthenticationToken(dados.email(), dados.senha());
         var authentication = authenticationManager.authenticate(authenticationToken);
         var tokenJWT = jwtTokenUtil.generateToken((Usuario) authentication.getPrincipal());
         return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
