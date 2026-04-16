@@ -35,12 +35,12 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/", "/index.html", "/cadastroUsuario.html", "/login.html", "/js/**", "/css/**").permitAll();
-                    req.requestMatchers(HttpMethod.POST, "/api/autenticacao/**").permitAll();
-                    req.requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll();
-                    req.anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("/", "/index.html", "/cadastroUsuario.html", "/login.html", "/js/**", "/css/**", "/favicon.ico").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll() // LIBERAÇÃO EXATA
+                        .requestMatchers(HttpMethod.POST, "/api/autenticacao/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

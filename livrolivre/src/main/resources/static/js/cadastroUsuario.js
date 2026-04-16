@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('/api/usuarios', {
+                const response = await fetch('/api/usuarios/cadastrar', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
