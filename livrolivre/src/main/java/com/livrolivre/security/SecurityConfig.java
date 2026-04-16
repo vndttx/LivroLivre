@@ -32,19 +32,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/static/**", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/api/usuarios/cadastrar").permitAll()
-                        .requestMatchers("/api/autenticacao/**").permitAll()
-                        .requestMatchers("/login.html", "/js/**", "/css/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+        return http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(req -> {
+                    req.requestMatchers("/", "/index.html", "/login.html", "/static/**", "/js/**", "/css/**", "/favicon.ico").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/api/autenticacao/**").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/api/usuarios/cadastrar").permitAll();
+                    req.anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
