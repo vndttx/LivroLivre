@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#ofertas-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
-    const btnSair = document.getElementById('btn-sair');
 
     if (!usuarioId) {
         window.location.href = 'login.html';
@@ -101,14 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (event) => {
-            event.preventDefault();
+        btnSair.onclick = (e) => {
+            e.preventDefault();
             localStorage.clear();
-            alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
-            return;
-        });
+        };
     }
 
     carregarOfertas();

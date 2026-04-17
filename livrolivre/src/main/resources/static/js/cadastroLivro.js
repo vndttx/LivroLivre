@@ -1,52 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-cadastro-livro');
-    const usuarioId = localStorage.getItem('usuarioId');
+    const token = localStorage.getItem('token');
 
-    if (!usuarioId) {
-        alert("Voce precisa estar logado.");
+    if (!token) {
         window.location.href = 'login.html';
         return;
     }
 
-    if (form) {
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-            const titulo = document.getElementById('titulo').value;
-            const autor = document.getElementById('autor').value;
-            const genero = document.getElementById('genero').value;
-            const estoque = document.getElementById('estoque').value;
+        const dados = {
+            titulo: document.getElementById('titulo').value,
+            autor: document.getElementById('autor').value,
+            genero: document.getElementById('genero').value,
+            estoque: parseInt(document.getElementById('estoque').value) || 1,
+            status: "DISPONIVEL"
+        };
 
-            const livroData = {
-                titulo: titulo,
-                autor: autor,
-                genero: genero,
-                estoque: parseInt(estoque) || 1,
-                status: "DISPONIVEL"
-            };
+        try {
+            const response = await fetch('/api/livros', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(dados)
+            });
 
-            try {
-                const token = localStorage.getItem('jwtToken');
-
-                const response = await fetch('/api/livros', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(livroData)
-                });
-
-                if (response.ok) {
-                    alert('Livro cadastrado com sucesso!');
-                    window.location.href = 'index.html';
-                } else {
-                    const erro = await response.text();
-                    alert('Erro ao cadastrar: ' + erro);
-                }
-            } catch (error) {
-                alert('Erro de conexao com o servidor.');
+            if (response.ok) {
+                alert('Livro cadastrado com sucesso!');
+                window.location.href = 'catalogo.html';
+            } else {
+                alert('Erro ao cadastrar livro.');
             }
-        });
-    }
+        } catch (error) {
+            alert('Erro de conexao.');
+        }
+    });
 });
