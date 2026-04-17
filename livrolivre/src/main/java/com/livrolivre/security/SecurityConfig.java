@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,14 +27,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(HttpMethod.POST, "/api/usuarios", "/api/autenticacao/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/livros/**").permitAll()
-                        .requestMatchers("/", "/index.html", "/login.html", "/cadastroUsuario.html", "/**.html").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico", "/error").permitAll()
+                        .requestMatchers("/", "/index.html", "/login.html", "/cadastroUsuario.html", "/cadastroLivro.html", "/catalogo.html", "/detalhes.html", "/dashboard.html", "/carrinho.html", "/historico.html", "/ofertas.html").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

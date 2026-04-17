@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // PADRONIZAÇÃO: Usar apenas 'token' e 'usuarioId'
     const token = localStorage.getItem('token');
     const usuarioId = localStorage.getItem('usuarioId');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
@@ -9,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSair = document.getElementById('btn-sair');
     const tituloPainel = document.getElementById('titulo-painel');
 
-    if (!token || !usuarioId) {
-        window.location.href = 'login.html';
+    if (!token) {
+        window.location.replace('/login.html');
         return;
     }
 

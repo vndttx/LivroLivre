@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.clear();
             alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
-            return;
         });
     }
 

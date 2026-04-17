@@ -2,10 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const tbody = document.querySelector('#livros-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
+    const token = localStorage.getItem('token');
     const btnSair = document.getElementById('btn-sair');
 
     async function fetchWithAuth(url, options = {}) {
-        const token = localStorage.getItem('jwtToken');
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
@@ -18,14 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const response = await fetch(url, { ...options, headers });
 
         if (response.status === 401 || response.status === 403) {
-            localStorage.clear();
-            alert('Sua sessao expirou. Faca login novamente.');
-            window.location.href = 'login.html';
-            return Promise.reject(new Error('Sessão expirada'));
+            const path = window.location.pathname;
+            if (!path.includes('index.html') && !path.includes('catalogo.html') && path !== '/') {
+                localStorage.clear();
+                window.location.replace('/login.html');
+                return Promise.reject('Sessão expirada');
+            }
         }
-
         return response;
     }
+
+    carregarLivros();
 
     async function atualizarContadorCarrinho() {
         if (!usuarioId) {
@@ -46,9 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarLivros() {
         tbody.innerHTML = '<tr><td colspan="5">Carregando livros...</td></tr>';
         try {
-            const responseLivros = await fetch('/api/livros');
-            if (!responseLivros.ok) throw new Error('Erro ao buscar os livros.');
-            let livros = await responseLivros.json();
+            const responseLivros = await fetchWithAuth('/api/livros');
+            if (!responseLivros.ok) {
+                const livros = await response.json();
+                renderizarLivros(livros);
+            }
 
             let livrosNoCarrinhoIds = new Set();
             if (usuarioId && localStorage.getItem('jwtToken')) {
@@ -136,5 +141,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     atualizarContadorCarrinho();
-    carregarLivros();
 });
