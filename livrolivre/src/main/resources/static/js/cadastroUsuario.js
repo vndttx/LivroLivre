@@ -1,42 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('cadastro-form');
+document.getElementById('cadastro-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    if (form) {
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    const dados = {
+        nomeUsuario: document.getElementById('nome-usuario').value,
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value
+    };
 
-            const nomeInput = document.getElementById('nome-usuario');
-            const emailInput = document.getElementById('email');
-            const senhaInput = document.getElementById('senha');
-
-            if (!nomeInput || !emailInput || !senhaInput) {
-                console.error("Erro: Um ou mais campos não foram encontrados no HTML.");
-                return;
-            }
-
-            const usuario = {
-                nomeUsuario: nomeInput.value,
-                email: emailInput.value,
-                senha: senhaInput.value
-            };
-
-            try {
-                const response = await fetch('/api/usuarios', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(usuario)
-                });
-
-                if (response.ok) {
-                    alert('Usuário cadastrado com sucesso!');
-                    window.location.href = 'login.html';
-                } else {
-                    const erroTxt = await response.text();
-                    alert('Erro no cadastro: ' + erroTxt);
-                }
-            } catch (error) {
-                alert('Erro ao conectar com o servidor.');
-            }
+    try {
+        const response = await fetch('/api/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
         });
+
+        if (response.ok) {
+            alert('Cadastro realizado com sucesso!');
+            window.location.href = 'login.html';
+        } else {
+            const erroMsg = await response.text();
+            alert('Erro no cadastro: ' + erroMsg);
+        }
+    } catch (err) {
+        alert('Erro de conexão com o servidor.');
     }
 });

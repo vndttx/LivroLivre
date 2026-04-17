@@ -3,7 +3,6 @@ package com.livrolivre.controller;
 import com.livrolivre.controller.dto.LoginRequest;
 import com.livrolivre.model.Usuario;
 import com.livrolivre.repository.UsuarioRepository;
-import com.livrolivre.service.UsuarioService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +15,18 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioRepository repository;
     @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private PasswordEncoder encoder;
 
     @PostMapping
     @Transactional
     public ResponseEntity<?> cadastrar(@RequestBody @Valid LoginRequest dados) {
-        var usuario = new Usuario(
-                dados.email(),
-                dados.nomeUsuario() != null ? dados.nomeUsuario() : dados.email(),
-                passwordEncoder.encode(dados.senha())
-        );
-
-        usuarioRepository.save(usuario);
+        if (repository.findByEmail(dados.email()).isPresent()) {
+            return ResponseEntity.badRequest().body("E-mail ja cadastrado.");
+        }
+        var usuario = new Usuario(dados.email(), dados.nomeUsuario(), encoder.encode(dados.senha()));
+        repository.save(usuario);
         return ResponseEntity.ok().build();
     }
 }

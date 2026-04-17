@@ -1,39 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
 
-if (loginForm) {
-        loginForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const dados = {
-                email: document.getElementById('email-usuario').value,
-                senha: document.getElementById('senha').value
-            };
-
-            const loginRequest = {
-                emailUsuario: dados.email,
-                senha: dados.senha
-            };
-
-            try {
-                const response = await fetch('/api/autenticacao/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    localStorage.setItem('token', data.token);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    const errorText = await response.text(); // Use response aqui dentro do else
-                    throw new Error(errorText);
-                }
-            } catch (error) {
-                console.error('Erro de Login:', error);
-                alert('Erro ao realizar login. Verifique suas credenciais.');
-            }
+    try {
+        const response = await fetch('/api/autenticacao/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
         });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('usuarioId', data.usuarioId);
+            window.location.href = 'dashboard.html';
+        } else {
+            alert('Falha no login. Verifique suas credenciais.');
+        }
+    } catch (err) {
+        alert('Erro de conexao com o servidor.');
     }
 });

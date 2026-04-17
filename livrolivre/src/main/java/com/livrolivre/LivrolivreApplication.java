@@ -9,4 +9,3 @@ public class LivrolivreApplication {
 		SpringApplication.run(LivrolivreApplication.class, args);
 	}
 }
-
