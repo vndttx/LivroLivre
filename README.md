@@ -41,5 +41,5 @@ O **LivroLivre** é uma plataforma web desenvolvida como projeto de extensão un
 
 ### 1. Clonar o Repositório
 ```bash
-git clone [https://github.com/seu-usuario/livrolivre.git](https://github.com/seu-usuario/livrolivre.git)
+git clone [https://github.com/vndttx/livrolivre.git](https://github.com/vndttx/livrolivre.git)
 cd livrolivre
