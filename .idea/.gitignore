@@ -2,5 +2,6 @@
 /shelf/
 /workspace.xml
 /.env
-/.idea
-/.vscode
+.vscode/
+.idea/
+*.iml
