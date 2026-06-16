@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#ofertas-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
-    const btnSair = document.getElementById('btn-sair');
 
     if (!usuarioId) {
         window.location.href = 'login.html';
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ofertas.forEach(oferta => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${oferta.solicitante.nomeUsuario}</td>
+                    <td>${oferta.solicitante.emailUsuario}</td>
                     <td>${oferta.livroOfertado.titulo}</td>
                     <td>${oferta.livroSolicitado.titulo}</td>
                     <td>
@@ -101,14 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (event) => {
-            event.preventDefault();
+        btnSair.onclick = (e) => {
+            e.preventDefault();
             localStorage.clear();
-            alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
-            return;
-        });
+        };
     }
 
     carregarOfertas();

@@ -29,7 +29,7 @@ public class TransacaoController {
         if (principal == null || principal.getName() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado.");
         }
-        return usuarioRepository.findByNomeUsuario(principal.getName())
+        return usuarioRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
     }
 

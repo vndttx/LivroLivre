@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tbody = document.querySelector('#historico-tabela tbody');
     const usuarioId = localStorage.getItem('usuarioId');
-    const btnSair = document.getElementById('btn-sair');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
 
     if (!usuarioId) {
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
 
                 const tituloLivro = t.livroSolicitado ? t.livroSolicitado.titulo : (t.livroOfertado ? t.livroOfertado.titulo : 'Livro removido');
-                const nomeDono = t.proprietario ? t.proprietario.nomeUsuario : 'Desconhecido';
+                const nomeDono = t.proprietario ? t.proprietario.emailUsuario : 'Desconhecido';
                 const dataFormatada = new Date(t.data).toLocaleDateString('pt-BR');
 
                 tr.innerHTML = `
@@ -82,14 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const btnSair = document.getElementById('btn-sair');
     if (btnSair) {
-        btnSair.addEventListener('click', (event) => {
-            event.preventDefault();
+        btnSair.onclick = (e) => {
+            e.preventDefault();
             localStorage.clear();
-            alert("Voce saiu com sucesso.");
             window.location.href = 'login.html';
-            return;
-        });
+        };
     }
 
     atualizarContador();

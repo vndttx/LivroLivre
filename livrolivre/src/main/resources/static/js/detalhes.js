@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             detalhesContainer.innerHTML = `
                 <h1>${livro.titulo}</h1>
                 <h3>por ${livro.autor}</h3>
-                <p><strong>Dono:</strong> ${livro.proprietario.nomeUsuario}</p>
+                <p><strong>Dono:</strong> ${livro.proprietario.emailUsuario}</p>
                 <p><strong>Genero:</strong> ${livro.genero || 'Nao informado'}</p>
                 <p><strong>Status:</strong> ${livro.status}</p>
                 <hr>

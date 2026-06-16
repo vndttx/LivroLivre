@@ -1,5 +1,6 @@
 async function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('jwtToken');
+    const API_BASE_URL = "https://livrolivre.onrender.com/api";
     const headers = {
         'Content-Type': 'application/json',
         ...options.headers

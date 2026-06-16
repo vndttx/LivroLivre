@@ -1,35 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('cadastro-form');
+document.getElementById('cadastro-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    if (form) {
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    const dados = {
+        nomeUsuario: document.getElementById('nome-usuario').value,
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value
+    };
 
-            const usuario = {
-                nomeUsuario: document.getElementById('nome-usuario').value,
-                senha: document.getElementById('senha').value
-            };
-
-            try {
-                const response = await fetch('/api/usuarios', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(usuario)
-                });
-
-                if (response.ok) {
-                    alert('Usuário cadastrado com sucesso!');
-                    window.location.href = 'login.html';
-                } else {
-                    const erro = await response.text();
-                    alert('Erro ao cadastrar: ' + (erro || response.status));
-                }
-            } catch (error) {
-                console.error('Erro no cadastro:', error);
-                alert('Não foi possível conectar ao servidor.');
-            }
+    try {
+        const response = await fetch('/api/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
         });
+
+        if (response.ok) {
+            alert('Cadastro realizado com sucesso!');
+            window.location.href = 'login.html';
+        } else {
+            const erroMsg = await response.text();
+            alert('Erro no cadastro: ' + erroMsg);
+        }
+    } catch (err) {
+        alert('Erro de conexão com o servidor.');
     }
 });

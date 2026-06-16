@@ -1,9 +1,13 @@
 package com.livrolivre.controller;
 
+import com.livrolivre.controller.dto.LoginRequest;
 import com.livrolivre.model.Usuario;
-import com.livrolivre.service.UsuarioService;
+import com.livrolivre.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,14 +15,18 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioRepository repository;
+    @Autowired
+    private PasswordEncoder encoder;
 
     @PostMapping
-    public ResponseEntity<?> cadastrarUsuario(@RequestBody Usuario usuario) {
-        if (usuarioService.buscarPorNomeUsuario(usuario.getNomeUsuario()).isPresent()) {
-            return ResponseEntity.badRequest().body("Nome de usuario ja existe.");
+    @Transactional
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid LoginRequest dados) {
+        if (repository.findByEmail(dados.email()).isPresent()) {
+            return ResponseEntity.badRequest().body("E-mail ja cadastrado.");
         }
-        Usuario novoUsuario = usuarioService.salvar(usuario);
-        return ResponseEntity.ok(novoUsuario);
+        var usuario = new Usuario(dados.email(), dados.nomeUsuario(), encoder.encode(dados.senha()));
+        repository.save(usuario);
+        return ResponseEntity.ok().build();
     }
 }

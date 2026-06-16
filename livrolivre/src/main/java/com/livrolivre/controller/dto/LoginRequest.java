@@ -1,10 +1,10 @@
-
 package com.livrolivre.controller.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-public class LoginRequest {
-    private String nomeUsuario;
-    private String senha;
-}
+public record LoginRequest(
+        @NotBlank @Email String email,
+        @NotBlank String senha,
+        String nomeUsuario // Opcional, usado no cadastro
+) {}
