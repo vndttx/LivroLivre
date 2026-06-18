@@ -12,7 +12,6 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
         if (response.ok) {
             const data = await response.json();
-            // Sincronizando com o Dashboard e Carrinho
             localStorage.setItem('token', data.token);
             localStorage.setItem('usuarioId', data.usuarioId);
             window.location.href = 'dashboard.html';

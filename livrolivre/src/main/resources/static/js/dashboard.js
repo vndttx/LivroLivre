@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
+    fetch('/api/livros', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
     const usuarioId = localStorage.getItem('usuarioId');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const ofertasBody = document.querySelector('#ofertas-tabela tbody');

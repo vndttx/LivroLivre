@@ -1,9 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     const token = localStorage.getItem('token');
+    fetch('/api/livros', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
     const tbody = document.querySelector('#carrinho-tabela tbody');
 
-    if (!token) { window.location.href = 'login.html'; return; }
+    if (!token) {window.location.href = 'login.html'; return; }
 
     async function carregarCarrinho() {
         if (!tbody) return;
