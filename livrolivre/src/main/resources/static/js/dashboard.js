@@ -1,23 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
-    fetch('/api/livros', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    })
     const usuarioId = localStorage.getItem('usuarioId');
+
+    if (!token || token === 'null' || !usuarioId || usuarioId === 'null') {
+        localStorage.clear();
+        window.location.href = 'login.html';
+        return;
+    }
+
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const ofertasBody = document.querySelector('#ofertas-tabela tbody');
     const meusLivrosBody = document.querySelector('#tabela-meus-livros tbody');
     const historicoBody = document.querySelector('#historico-tabela tbody');
     const tituloPainel = document.getElementById('titulo-painel');
-
-    if (!token || !usuarioId) {
-        window.location.href = 'login.html';
-        return;
-    }
 
     if (tituloPainel) {
         tituloPainel.textContent = `Meu Painel`;

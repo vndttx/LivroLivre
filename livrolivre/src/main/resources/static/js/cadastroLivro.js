@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-cadastro-livro');
     const token = localStorage.getItem('token');
 
-    if (!token) {
+    if (!token || token === 'null') {
+        localStorage.clear();
         window.location.href = 'login.html';
         return;
     }

@@ -1,3 +1,14 @@
+// Intercept all fetch requests to prepend the production API URL when hosted
+const originalFetch = window.fetch;
+window.fetch = function (url, options) {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_BASE_URL = isLocal ? "" : "https://livrolivre.onrender.com";
+    if (typeof url === 'string' && url.startsWith('/api')) {
+        url = API_BASE_URL + url;
+    }
+    return originalFetch(url, options);
+};
+
 async function fetchWithAuth(url, options = {}) {
     const token = localStorage.getItem('token');
     const API_BASE_URL = "https://livrolivre.onrender.com/api";
