@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchWithAuth(url, options = {}) {
-        const token = localStorage.getItem('jwtToken');
+        const token = localStorage.getItem('token');
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers
