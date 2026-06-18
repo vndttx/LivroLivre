@@ -1,6 +1,6 @@
 package com.livrolivre.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // Importante para Lazy Loading
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.livrolivre.model.enums.StatusTransacao;
 import com.livrolivre.model.enums.TipoTransacao;
 import jakarta.persistence.*;

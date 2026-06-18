@@ -39,7 +39,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                 "/ofertas.html",
                 "/css/**", 
                 "/js/**", 
-                "/api/auth/**"
+                "/api/**"
             ).permitAll()
             .anyRequest().authenticated()
         )

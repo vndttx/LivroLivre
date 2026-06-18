@@ -8,7 +8,7 @@ document.getElementById('cadastro-form').addEventListener('submit', async (e) =>
     };
 
     try {
-        const response = await fetch('/api/auth/cadastro', {
+        const response = await fetch('/api/cadastro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dados)
