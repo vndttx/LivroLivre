@@ -25,37 +25,44 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/",
-                "/index.html", 
-                "/login.html", 
-                "/cadastroUsuario.html", 
-                "/historico.html",
-                "/ofertas.html",
-                "/css/**", 
-                "/js/**", 
-                "/api/**"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/",
+                    "/index.html", 
+                    "/login.html", 
+                    "/cadastroUsuario.html", 
+                    "/cadastroLivro.html",
+                    "/catalogo.html",
+                    "/carrinho.html",
+                    "/dashboard.html",
+                    "/historico.html",
+                    "/ofertas.html",
+                    "/detalhes.html",
+                    "/css/**", 
+                    "/js/**"
+                ).permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/autenticacao/login").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/cadastro").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/livros/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-    http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
-}
+        return http.build();
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
