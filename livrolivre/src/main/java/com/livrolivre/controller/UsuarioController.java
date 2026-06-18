@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/auth")
 public class UsuarioController {
 
     @Autowired
@@ -19,7 +19,7 @@ public class UsuarioController {
     @Autowired
     private PasswordEncoder encoder;
 
-    @PostMapping
+    @PostMapping("/cadastro")
     @Transactional
     public ResponseEntity<?> cadastrar(@RequestBody @Valid LoginRequest dados) {
         if (repository.findByEmail(dados.email()).isPresent()) {
