@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const usuarioId = localStorage.getItem('usuarioId');
     const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+    const usuarioId = localStorage.getItem('usuarioId');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const tbody = document.querySelector('#livros-recentes-tabela tbody');
 
