@@ -5,6 +5,8 @@
     --cor-texto-primario: #020D19;
     --cor-texto-secundario: #020D19;
     --cor-borda: #EFEFEF;
+    --cor-saida: #db3939;
+    --cor-confirm:#30dd20;
 }
 
 * {
@@ -14,7 +16,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Google Sans Flex", "Segoe UI";
     background-color: var(--cor-fundo);
     color: var(--cor-texto-primario);
     line-height: 1.6;
@@ -73,15 +75,16 @@ select {
     outline: none;
 }
 
-button[type="submit"], .btn-cadastrar, .btn-acao, button, .button {
+button[type="submit"], .btn-cadastrar, button, .button {
     background-color: var(--cor-primaria);
     color: #FFFFFF;
+    font-family: "Google Sans Flex";
     border: none;
-    padding: 12px 24px;
-    border-radius: 5px;
+    padding: 12px 12px;
+    border-radius: 15px;
     font-size: 16px;
     cursor: pointer;
-    width: 25%;
+    width: 150px;
     margin-top: 8px;
     margin-bottom: 8px;
     align-self: center;
@@ -90,12 +93,37 @@ button[type="submit"], .btn-cadastrar, .btn-acao, button, .button {
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-button[type="submit"]:hover, .btn-cadastrar:hover, .btn-acao:hover, button:hover, .button:hover {
+button[type="submit"]:hover, .btn-cadastrar:hover, button:hover, .button:hover {
     background-color: #EFEFEF;
     color: var(--cor-texto-primario);
+}
+
+button[type="sair"], .btn-sair {
+    background-color: var(--cor-primaria);
+    color: var(--cor-fundo);
+    border: none;
+    padding: 12px 12px;
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-self: center;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+button[type="sair"]:hover, .btn-sair:hover {
+    background-color: var(--cor-saida);
+    color: var(--cor-fundo);
 }
 
 .book-grid {
@@ -134,7 +162,7 @@ button[type="submit"]:hover, .btn-cadastrar:hover, .btn-acao:hover, button:hover
     margin-bottom: 6px;
 }
 
-.book-card button, .book-card .btn-acao, .book-card .button {
+.book-card button, .book-card, .book-card .button {
     width: 100%;
     margin-top: 16px;
     margin-bottom: 0;
@@ -154,12 +182,12 @@ table {
 th, td {
     text-align: left;
     padding: 12px;
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-th {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
     background-color: var(--cor-primaria);
-    color: #FFFFFF;
+    color:var(--cor-superficie);
+
 }
 
 tr:nth-child(even) {
