@@ -1,24 +1,22 @@
 package com.livrolivre.model;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-@Entity
-@Table(name = "carrinho")
+@AllArgsConstructor
 public class Carrinho {
+    private String usuarioId;
+    private List<String> livroIds;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Carrinho() {
+        this.livroIds = new ArrayList<>();
+    }
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
-
-    @ManyToOne
-    @JoinColumn(name = "livro_id", nullable = false)
-    private Livro livro;
-
-    private int quantidade = 1;
+    public Carrinho(String usuarioId) {
+        this.usuarioId = usuarioId;
+        this.livroIds = new ArrayList<>();
+    }
 }

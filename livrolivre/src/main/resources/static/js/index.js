@@ -3,6 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuarioId = localStorage.getItem('usuarioId');
     const contadorCarrinhoSpan = document.getElementById('contador-carrinho');
     const tbody = document.querySelector('#livros-recentes-tabela tbody');
+    const emailUsuario = localStorage.getItem('emailUsuario') || localStorage.getItem('usuarioEmail');
+
+    if (emailUsuario) {
+        const menuPrincipal = document.querySelector('.menu-principal');
+        if (menuPrincipal) {
+            const spanUser = document.createElement('span');
+            spanUser.style.float = 'right';
+            spanUser.style.color = '#fff';
+            spanUser.style.padding = '10px';
+            spanUser.style.fontWeight = 'bold';
+            spanUser.textContent = emailUsuario;
+            menuPrincipal.appendChild(spanUser);
+        }
+    }
 
     async function fetchWithAuth(url, options = {}) {
         const headers = { 'Content-Type': 'application/json', ...options.headers };
@@ -42,15 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error(error); }
     }
 
+    async function atualizarContador() {
+        if (!usuarioId || usuarioId === 'null' || !contadorCarrinhoSpan) return;
+        const response = await fetchWithAuth(`/api/carrinho/${usuarioId}`);
+        if (response.ok) {
+            const carrinho = await response.json();
+            const lista = carrinho.livros || [];
+            contadorCarrinhoSpan.textContent = lista.length;
+        }
+    }
+
     if (tbody) {
         tbody.addEventListener('click', async (e) => {
             if (e.target.classList.contains('adicionar-carrinho')) {
                 e.preventDefault();
                 if (!usuarioId) { window.location.href = 'login.html'; return; }
 
-                const livroId = e.target.getAttribute('data-id');
-                const res = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, { method: 'POST' });
-                if (res.ok) alert('Adicionado ao carrinho!');
+                const libroId = e.target.getAttribute('data-id');
+                const res = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${libroId}`, { method: 'POST' });
+                if (res.ok) {
+                    alert('Adicionado ao carrinho!');
+                    atualizarContador();
+                }
             }
         });
     }
@@ -65,4 +92,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     carregarLivrosRecentes();
+    atualizarContador();
 });

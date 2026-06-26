@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<script src="js/utils.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Painel do Usuario - LivroLivre</title>
@@ -13,18 +12,18 @@
         <a href="index.html" class="button">Pagina Inicial</a>
         <a href="catalogo.html" class="button">Ver Catalogo</a>
         <a href="carrinho.html" class="button">Ver Carrinho (<span id="contador-carrinho">0</span>)</a>
-        <a href="#" id="btn-sair" class="button">Sair</a>
+        <a href="#" id="btn-sair" class="btn-sair">Sair</a>
     </nav>
 
     <section>
-        <h2>Ofertas de Troca Recebidas</h2>
+        <h2>Ofertas Recebidas</h2>
         <table id="ofertas-tabela">
             <thead>
             <tr>
-                <th>Usuario Solicitante</th>
+                <th>Usuário Solicitante</th>
+                <th>Livro Solicitado</th>
                 <th>Livro Oferecido</th>
-                <th>Seu Livro Solicitado</th>
-                <th>Acoes</th>
+                <th>Ações</th>
             </tr>
             </thead>
             <tbody>
@@ -39,8 +38,9 @@
             <tr>
                 <th>Titulo</th>
                 <th>Autor</th>
-                <th>Status</th>
-                <th>Acoes</th>
+                <th>Gênero</th>
+                <th>Estoque</th>
+                <th>Ações</th>
             </tr>
             </thead>
             <tbody>
@@ -49,13 +49,13 @@
     </section>
 
     <section>
-        <h2>Meu Historico de Solicitacoes</h2>
+        <h2>Histórico de transações</h2>
         <table id="historico-tabela">
             <thead>
             <tr>
-                <th>Data</th>
                 <th>Tipo</th>
-                <th>Livros</th>
+                <th>Livro Solicitado</th>
+                <th>Livro Oferecido</th>
                 <th>Dono Original</th>
                 <th>Status</th>
             </tr>

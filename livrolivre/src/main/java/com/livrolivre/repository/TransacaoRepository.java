@@ -1,26 +1,45 @@
-// TransacaoRepository.java (Conteudo OBRIGATÓRIO)
-
 package com.livrolivre.repository;
 
+import com.google.cloud.firestore.*;
 import com.livrolivre.model.Transacao;
-import com.livrolivre.model.Usuario;
-import com.livrolivre.model.enums.StatusTransacao;
-import com.livrolivre.model.enums.TipoTransacao;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
+import org.springframework.stereotype.Repository;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
-public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
+@Repository
+public class TransacaoRepository {
 
-    @Query("SELECT t FROM Transacao t WHERE t.solicitante.id = :usuarioId OR t.proprietario.id = :usuarioId ORDER BY t.data DESC")
-    List<Transacao> findHistoricoCompleto(@Param("usuarioId") Long usuarioId);
+    private final CollectionReference collection;
 
-    @Query("SELECT t FROM Transacao t WHERE t.proprietario = :proprietario AND t.tipo = :tipo AND t.status = :status ORDER BY t.data DESC")
-    List<Transacao> buscarOfertasRecebidas(
-            @Param("proprietario") Usuario proprietario,
-            @Param("tipo") TipoTransacao tipo,
-            @Param("status") StatusTransacao status
-    );
+    public TransacaoRepository(Firestore firestore) {
+        this.collection = firestore.collection("transacoes");
+    }
+
+    public Transacao save(Transacao transacao) throws ExecutionException, InterruptedException {
+        if (transacao.getId() == null || transacao.getId().isEmpty()) {
+            DocumentReference docRef = collection.document();
+            transacao.setId(docRef.getId());
+        }
+        collection.document(transacao.getId()).set(transacao).get();
+        return transacao;
+    }
+
+    public Optional<Transacao> findById(String id) throws ExecutionException, InterruptedException {
+        DocumentSnapshot snapshot = collection.document(id).get().get();
+        if (snapshot.exists()) {
+            return Optional.of(snapshot.toObject(Transacao.class));
+        }
+        return Optional.empty();
+    }
+
+    public List<Transacao> findByDestinatarioId(String usuarioId) throws ExecutionException, InterruptedException {
+        List<Transacao> transacoes = new ArrayList<>();
+        QuerySnapshot querySnapshot = collection.whereEqualTo("destinatario.id", usuarioId).get().get();
+        for (QueryDocumentSnapshot doc : querySnapshot.getDocuments()) {
+            transacoes.add(doc.toObject(Transacao.class));
+        }
+        return transacoes;
+    }
 }

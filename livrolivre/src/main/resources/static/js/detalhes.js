@@ -81,8 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Genero:</strong> ${livro.genero || 'Nao informado'}</p>
                 <p><strong>Status:</strong> ${livro.status}</p>
                 <hr>
-                <h4>Sinopse</h4>
-                <p>${livro.sinopse || 'Nenhuma sinopse disponivel.'}</p>
                 <hr>
                 <div id="acoes-container"></div>
             `;

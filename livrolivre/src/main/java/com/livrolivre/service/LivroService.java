@@ -1,14 +1,12 @@
 package com.livrolivre.service;
 
 import com.livrolivre.model.Livro;
-import com.livrolivre.model.Usuario;
-import com.livrolivre.model.enums.StatusLivro;
 import com.livrolivre.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class LivroService {
@@ -16,23 +14,36 @@ public class LivroService {
     @Autowired
     private LivroRepository livroRepository;
 
-    public List<Livro> listarTodos() {
-        return livroRepository.findByStatus(StatusLivro.DISPONIVEL);
+    public List<Livro> findAll() {
+        try {
+            return livroRepository.findAll();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException("Erro ao listar livros no Firebase", e);
+        }
     }
 
-    public Optional<Livro> buscarPorId(Long id) {
-        return livroRepository.findById(id);
+    public Optional<Livro> findById(String id) {
+        try {
+            return livroRepository.findById(id);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException("Erro ao buscar livro por ID no Firebase", e);
+        }
     }
 
-    public Livro salvar(Livro livro) {
-        return livroRepository.save(livro);
+    public Livro save(Livro livro) {
+        try {
+            return livroRepository.save(livro);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException("Erro ao salvar livro no Firebase", e);
+        }
     }
 
-    public void remover(Long id) {
+    public List<Livro> findByUsuarioId(String usuarioId) throws ExecutionException, InterruptedException {
+        return livroRepository.findByProprietarioId(usuarioId);
+    }
+
+    public void deleteById(String id) throws java.util.concurrent.ExecutionException, InterruptedException {
         livroRepository.deleteById(id);
     }
 
-    public List<Livro> buscarPorProprietario(Usuario proprietario) {
-        return livroRepository.findByProprietario(proprietario);
-    }
 }

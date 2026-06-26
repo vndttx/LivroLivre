@@ -1,4 +1,3 @@
-// Intercept all fetch requests to prepend the production API URL when hosted
 const originalFetch = window.fetch;
 window.fetch = function (url, options) {
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -29,7 +28,6 @@ async function fetchWithAuth(url, options = {}) {
         window.location.href = 'login.html';
         return Promise.reject(new Error('Sessao expirada'));
     }
-
     return response;
 }
 

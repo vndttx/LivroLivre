@@ -1,18 +1,12 @@
 package com.livrolivre.controller;
 
-import com.livrolivre.controller.dto.PropostaTrocaDTO;
 import com.livrolivre.model.Transacao;
-import com.livrolivre.model.Usuario;
-import com.livrolivre.repository.UsuarioRepository;
 import com.livrolivre.service.TransacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -22,60 +16,42 @@ public class TransacaoController {
     @Autowired
     private TransacaoService transacaoService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    @PostMapping
+    public ResponseEntity<Transacao> proporTroca(@RequestBody Transacao transacao) {
+        return ResponseEntity.ok(transacaoService.salvarProposta(transacao));
+    }
 
-    private Usuario getUsuarioLogado(Principal principal) {
-        if (principal == null || principal.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado.");
+    @GetMapping("/{id}")
+    public ResponseEntity<Transacao> buscarTransacao(@PathVariable String id) {
+        return transacaoService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Transacao>> buscarPorUsuario(@PathVariable String usuarioId) {
+        try {
+            return ResponseEntity.ok(transacaoService.buscarPorUsuarioDestinatario(usuarioId));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao buscar transações.", e);
         }
-        return usuarioRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado"));
     }
 
-    @PostMapping("/finalizar/{livroId}")
-    public ResponseEntity<Transacao> finalizarDoacao(@PathVariable Long livroId, Principal principal) {
-        Usuario solicitante = getUsuarioLogado(principal);
-        Transacao transacao = transacaoService.finalizarDoacao(solicitante, livroId);
-        return ResponseEntity.ok(transacao);
+    @PutMapping("/{id}/aceitar")
+    public ResponseEntity<Transacao> aceitarTransacao(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(transacaoService.aceitarTransacao(id));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao aceitar transação.", e);
+        }
     }
 
-    @GetMapping("/historico")
-    public ResponseEntity<List<Transacao>> buscarHistorico(Principal principal) {
-        Usuario usuario = getUsuarioLogado(principal);
-        List<Transacao> historico = transacaoService.buscarHistoricoPorUsuario(usuario.getId());
-        return ResponseEntity.ok(historico);
-    }
-
-    @PostMapping("/propor-troca")
-    public ResponseEntity<Transacao> proporTroca(@RequestBody PropostaTrocaDTO proposta, Principal principal) {
-        Usuario solicitante = getUsuarioLogado(principal);
-        Transacao transacao = transacaoService.proporTroca(
-                proposta.getLivroSolicitadoId(),
-                proposta.getLivroOfertadoId(),
-                solicitante
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(transacao);
-    }
-
-    @GetMapping("/ofertas-recebidas")
-    public ResponseEntity<List<Transacao>> buscarOfertasRecebidas(Principal principal) {
-        Usuario proprietario = getUsuarioLogado(principal);
-        List<Transacao> ofertas = transacaoService.buscarOfertasRecebidas(proprietario);
-        return ResponseEntity.ok(ofertas);
-    }
-
-    @PostMapping("/{id}/aceitar")
-    public ResponseEntity<Transacao> aceitarTroca(@PathVariable Long id, Principal principal) {
-        Usuario usuario = getUsuarioLogado(principal);
-        Transacao transacao = transacaoService.aceitarTroca(id, usuario);
-        return ResponseEntity.ok(transacao);
-    }
-
-    @PostMapping("/{id}/recusar")
-    public ResponseEntity<Transacao> recusarTroca(@PathVariable Long id, Principal principal) {
-        Usuario usuario = getUsuarioLogado(principal);
-        Transacao transacao = transacaoService.recusarTroca(id, usuario);
-        return ResponseEntity.ok(transacao);
+    @PutMapping("/{id}/recusar")
+    public ResponseEntity<Transacao> recusarTransacao(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(transacaoService.recusarTransacao(id));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao recusar transação.", e);
+        }
     }
 }

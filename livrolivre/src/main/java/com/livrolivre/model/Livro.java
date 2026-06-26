@@ -1,33 +1,18 @@
 package com.livrolivre.model;
 
 import com.livrolivre.model.enums.StatusLivro;
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.ToString;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-@Entity
-@Table(name = "livros")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Livro {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
     private String titulo;
     private String autor;
-    @Column(nullable = true)
-    private String genero;
-    private Integer estoque;
-
-    @Enumerated(EnumType.STRING)
+    private int estoque;
     private StatusLivro status;
-
-
-    @ManyToOne
-    @JoinColumn(name = "proprietario_id")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Usuario proprietario;
 }

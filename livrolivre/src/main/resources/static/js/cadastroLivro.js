@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-cadastro-livro');
     const token = localStorage.getItem('token');
+    const usuarioId = localStorage.getItem('usuarioId');
 
-    if (!token || token === 'null') {
+    if (!token || token === 'null' || !usuarioId || usuarioId === 'null') {
         localStorage.clear();
         window.location.href = 'login.html';
         return;
@@ -24,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'X-Usuario-Id': usuarioId
                 },
                 body: JSON.stringify(dados)
             });

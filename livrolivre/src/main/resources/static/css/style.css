@@ -16,29 +16,30 @@
 }
 
 body {
-    font-family: "Google Sans Flex", "Segoe UI";
+    font-family: "Google Sans Flex", "Segoe UI", serif;
     background-color: var(--cor-fundo);
     color: var(--cor-texto-primario);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     line-height: 1.6;
     padding: 32px;
 }
 
 .container, .login-container {
     max-width: 800px;
-    margin: 80px auto;
+    margin: 80px;
     background-color: var(--cor-superficie);
     padding: 32px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.login-container {
-    max-width: 400px;
-    margin-top: 80px;
-}
-
 h1, h2 {
     color: var(--cor-primaria);
+    margin-top: 24px;
     margin-bottom: 24px;
 }
 
@@ -58,14 +59,18 @@ label {
     font-weight: bold;
 }
 
-.input-group {
-    margin-bottom: 8px;
+.input, input{
+    margin-bottom: 16px;
+    text-align:justify;
+    font-family: "Google Sans Flex", serif;
+    border-radius: 5px;
+    border-color: var(--cor-borda);
+    border-style:solid;
+    margin-top: 8px;
+    height: 40px;
     width: 100%;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="number"],
 select {
     width: 100%;
     padding: 12px;
@@ -75,48 +80,77 @@ select {
     outline: none;
 }
 
-button[type="submit"], .btn-cadastrar, button, .button {
+button[type="submit"], button, .button {
     background-color: var(--cor-primaria);
-    color: #FFFFFF;
-    font-family: "Google Sans Flex";
+    color: var(--cor-fundo);
+    font-family: "Google Sans Flex", serif;
+    border: none;
+    padding: 12px 12px;
+    border-radius: 15px;
+    font-size: 16px;
+    width: 150px;
+    margin-top: 16px;
+    margin-bottom: 48px;
+    text-align: center;
+    display: inline;
+    justify-content: center;
+    text-decoration: none;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+button[type="submit"]:hover, button:hover, .button:hover {
+    background-color: #EFEFEF;
+    color: var(--cor-texto-primario);
+}
+
+button[type="cadastro"], .btn-cadastro {
+    background-color: var(--cor-primaria);
+    color: var(--cor-fundo);
+    font-family: "Google Sans Flex", serif;
     border: none;
     padding: 12px 12px;
     border-radius: 15px;
     font-size: 16px;
     cursor: pointer;
-    width: 150px;
-    margin-top: 8px;
-    margin-bottom: 8px;
     align-self: center;
-    text-align: center;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
+    width: 150px;
+    margin-top: 16px;
+    margin-bottom: 48px;
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-button[type="submit"]:hover, .btn-cadastrar:hover, button:hover, .button:hover {
-    background-color: #EFEFEF;
+button[type="cadastro"]:hover, .btn-cadastro:hover {
+    background-color: var(--cor-confirm);
     color: var(--cor-texto-primario);
+}
+
+.btn-retorno {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-retorno:hover {
+    color: #007bff;
 }
 
 button[type="sair"], .btn-sair {
     background-color: var(--cor-primaria);
     color: var(--cor-fundo);
+    font-family: "Google Sans Flex", serif;
     border: none;
     padding: 12px 12px;
     border-radius: 15px;
     font-size: 16px;
-    cursor: pointer;
     width: 150px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    align-self: center;
-    text-align: center;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: 16px;
+    margin-bottom: 48px;
     text-decoration: none;
     transition: background-color 0.5s ease, color 0.5s ease;
 }
@@ -175,24 +209,38 @@ button[type="sair"]:hover, .btn-sair:hover {
 
 table {
     width: 100%;
+    font-weight: normal;
+    border-radius: 150px;
     border-collapse: collapse;
     margin-top: 24px;
+    margin-bottom: 12px;
 }
 
-th, td {
-    text-align: left;
+th {
+    margin-top: 24px;
     padding: 12px;
     font-size: 15px;
     font-weight: bold;
     text-align: center;
     background-color: var(--cor-primaria);
     color:var(--cor-superficie);
-
 }
 
-tr:nth-child(even) {
+td {
+    padding: 12px;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    background-color: var(--cor-fundo);
+    color:var(--cor-primaria);
+}
+
+
+tr, tr:nth-child(even) {
+    margin-top: 24px;
     background-color: var(--cor-fundo);
 }
+
 
 .modal {
     display: none;

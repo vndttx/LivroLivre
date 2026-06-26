@@ -5,7 +5,6 @@ import com.livrolivre.service.CarrinhoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/carrinho")
@@ -14,31 +13,22 @@ public class CarrinhoController {
     @Autowired
     private CarrinhoService carrinhoService;
 
-    @GetMapping("/{usuarioId}")
-    public List<Carrinho> getCarrinhoByUsuario(@PathVariable Long usuarioId) {
-        return carrinhoService.findByUsuarioId(usuarioId);
+    @PostMapping("/{usuarioId}/adicionar/{livroId}")
+    public ResponseEntity<Carrinho> adicionarItem(
+            @PathVariable String usuarioId,
+            @PathVariable String livroId) {
+        return ResponseEntity.ok(carrinhoService.adicionarAoCarrinho(usuarioId, livroId));
     }
 
-    @PostMapping("/{usuarioId}/adicionar/{livroId}")
-    public ResponseEntity<Carrinho> adicionarItemCarrinho(
-            @PathVariable Long usuarioId,
-            @PathVariable Long livroId) {
-        Carrinho item = carrinhoService.adicionarItemCarrinho(usuarioId, livroId);
-        if (item != null) {
-            return ResponseEntity.ok(item);
-        }
-        return ResponseEntity.badRequest().build();
+    @GetMapping("/{usuarioId}")
+    public ResponseEntity<com.livrolivre.controller.dto.CarrinhoDTO> buscarCarrinho(@PathVariable String usuarioId) {
+        return ResponseEntity.ok(carrinhoService.buscarPorUsuarioId(usuarioId));
     }
 
     @DeleteMapping("/{usuarioId}/remover/{livroId}")
-    public ResponseEntity<Void> removerItemCarrinho(
-            @PathVariable Long usuarioId,
-            @PathVariable Long livroId
-    ) {
-        if (carrinhoService.removerItemCarrinho(usuarioId, livroId)) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<com.livrolivre.controller.dto.CarrinhoDTO> removerItem(
+            @PathVariable String usuarioId,
+            @PathVariable String livroId) {
+        return ResponseEntity.ok(carrinhoService.removerDoCarrinho(usuarioId, livroId));
     }
 }
