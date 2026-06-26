@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${livro.autor}</td>
                     <td>${livro.genero || '-'}</td>
                     <td>${livro.estoque}</td>
-                    <td><button onclick="removerLivro('${livro.id}')" style="color: red; cursor: pointer; background: none; border: none; font-weight: bold;">Remover</button></td>
+                    <td><button onclick="removerLivro('${livro.id}')" style="color: #30dd20; cursor: pointer; background: #020D19; border: none; font-weight: bold;">Remover</button></td>
                 `;
                 meusLivrosBody.appendChild(tr);
             });
