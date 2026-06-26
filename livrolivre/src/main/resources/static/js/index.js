@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.innerHTML = `
                     <td>${livro.titulo}</td>
                     <td>${livro.autor}</td>
-                    <td>${livro.genero || '-'}</td>
+                    <td>${livro.genero}</td>
                     <td>${livro.status}</td>
                     <td><a href="#" class="adicionar-carrinho" data-id="${livro.id}">Adicionar</a></td>
                 `;
@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 if (!usuarioId) { window.location.href = 'login.html'; return; }
 
-                const libroId = e.target.getAttribute('data-id');
-                const res = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${libroId}`, { method: 'POST' });
+                const livroId = e.target.getAttribute('data-id');
+                const res = await fetchWithAuth(`/api/carrinho/${usuarioId}/adicionar/${livroId}`, { method: 'POST' });
                 if (res.ok) {
                     alert('Adicionado ao carrinho!');
                     atualizarContador();

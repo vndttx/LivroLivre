@@ -33,10 +33,10 @@ public class CarrinhoRepository {
         return Optional.empty();
     }
 
-    public Carrinho adicionarItem(String usuarioId, String libroId) throws ExecutionException, InterruptedException {
+    public Carrinho adicionarItem(String usuarioId, String livroId) throws ExecutionException, InterruptedException {
         Carrinho carrinho = findByUsuarioId(usuarioId).orElse(new Carrinho(usuarioId));
-        if (!carrinho.getLivroIds().contains(libroId)) {
-            carrinho.getLivroIds().add(libroId);
+        if (!carrinho.getLivroIds().contains(livroId)) {
+            carrinho.getLivroIds().add(livroId);
         }
         return save(carrinho);
     }
