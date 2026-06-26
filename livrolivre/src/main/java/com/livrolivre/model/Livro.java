@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class Livro {
     private String id;
     private String titulo;
+    private String genero;
     private String autor;
     private int estoque;
     private StatusLivro status;

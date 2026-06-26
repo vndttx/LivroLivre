@@ -16,7 +16,7 @@
 }
 
 body {
-    font-family: "Google Sans Flex", "Segoe UI", serif;
+    font-family: "Google Sans Flex", "Segoe UI", Segoe UI, sans-serif;
     background-color: var(--cor-fundo);
     color: var(--cor-texto-primario);
     margin: 0;
@@ -63,7 +63,7 @@ label {
 .input, input{
     margin-bottom: 16px;
     text-align:justify;
-    font-family: "Google Sans Flex", serif;
+    font-family: "Google Sans Flex", sans-serif;
     border-radius: 5px;
     border-color: var(--cor-borda);
     border-style:solid;
@@ -81,7 +81,7 @@ select {
     outline: none;
 }
 
-button[type="submit"], button, .button, .adicionar-carrinho {
+button[type="submit"], button, .button {
     background-color: var(--cor-primaria);
     color: var(--cor-fundo);
     font-family: "Google Sans Flex", serif;
@@ -99,7 +99,7 @@ button[type="submit"], button, .button, .adicionar-carrinho {
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-button[type="submit"]:hover, button:hover, .button:hover, adicionar-carrinho.hover {
+button[type="submit"]:hover, button:hover, .button:hover {
     background-color: #EFEFEF;
     color: var(--cor-texto-primario);
 }
@@ -144,7 +144,7 @@ button[type="cadastro"]:hover, .btn-cadastro:hover {
 button[type="sair"], .btn-sair {
     background-color: var(--cor-primaria);
     color: var(--cor-fundo);
-    font-family: "Google Sans Flex", serif;
+    font-family: "Google Sans Flex", sans-serif;
     border: none;
     padding: 12px 12px;
     border-radius: 15px;

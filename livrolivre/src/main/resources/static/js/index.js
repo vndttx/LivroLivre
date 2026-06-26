@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${livro.autor}</td>
                     <td>${livro.genero}</td>
                     <td>${livro.status}</td>
-                    <td><a href="#" class="adicionar-carrinho" data-id="${livro.id}" style="color: #db3939; cursor: pointer; background: #020D19; border: none; font-weight: bold;">Adicionar</a></td>
+                    <td><a href="#" class="adicionar-carrinho" data-id="${livro.id}" style="color: #30dd20; cursor: pointer; background: #020D19; border: none; font-weight: bold;">Adicionar</a></td>
                 `;
                 tbody.appendChild(tr);
             });

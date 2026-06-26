@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('token', dados.token);
                 localStorage.setItem('usuarioId', dados.id);
 
-                window.location.href = 'catalogo.html';
+                window.location.href = 'index.html';
             } else {
                 const textoErro = await response.text();
                 alert(textoErro || 'E-mail ou senha incorretos.');
