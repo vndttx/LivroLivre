@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${solicitanteEmail}</td>
                     <td>${livroSolicitadoTitulo}</td>
                     <td>${livroOferecidoTitulo}</td>
-                    <td style="display: flex; gap: 8px;">
-                        <button class="btn-aceitar" data-id="${oferta.id}" style="color: green; cursor: pointer; background: none; border: none; font-weight: bold;">Aceitar</button>
-                        <button class="btn-recusar" data-id="${oferta.id}" style="color: red; cursor: pointer; background: none; border: none; font-weight: bold;">Recusar</button>
+                    <td>
+                        <button class="btn-aceitar" data-id="${oferta.id}">Aceitar</button>
+                        <button class="btn-recusar" data-id="${oferta.id}">Recusar</button>
                     </td>
                 `;
                 ofertasBody.appendChild(tr);
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${livro.autor}</td>
                     <td>${livro.genero || '-'}</td>
                     <td>${livro.estoque}</td>
-                    <td><button onclick="removerLivro('${livro.id}')" style="color: #db3939; cursor: pointer; background: #020D19; border: none; font-weight: bold;">Remover</button></td>
+                    <td><button onclick="removerLivro('${livro.id}')" class="btn-remover">Remover</button></td>
                 `;
                 meusLivrosBody.appendChild(tr);
             });
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'DELETE'
             });
             if (response.ok) {
-                alert('Livro removido com sucesso!');
+                alert('Livro removedo com sucesso!');
                 carregarMeusLivros();
             } else {
                 alert('Erro ao remover livro.');
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tr = document.createElement('tr');
 
                 const tipoTexto = transacao.tipo === 'TROCA' ? 'Troca' : 'Doação';
-                const livroSolicitadoTitulo = transacao.livroSolicitado ? transacao.livroSolicitado.titulo : '-';
+                const livreSolicitadoTitulo = transacao.livroSolicitado ? transacao.livroSolicitado.titulo : '-';
 
                 let livroOferecidoTexto = '-';
                 if (transacao.tipo === 'DOACAO') {
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 tr.innerHTML = `
                     <td>${tipoTexto}</td>
-                    <td>${livroSolicitadoTitulo}</td>
+                    <td>${livreSolicitadoTitulo}</td>
                     <td>${livroOferecidoTexto}</td>
                     <td>${donoOriginalEmail}</td>
                     <td>${statusTexto}</td>
