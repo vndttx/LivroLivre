@@ -55,15 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             livros.forEach(livro => {
                 const tr = document.createElement('tr');
-                const donoEmail = (livro.proprietario && livro.proprietario.email) ? livro.proprietario.email : 'Desconhecido';
+                const donoNome = (livro.proprietario && livro.proprietario.nome) ? livro.proprietario.nome : 'Desconhecido';
                 const donoId = (livro.proprietario && livro.proprietario.id) ? livro.proprietario.id : '';
 
                 tr.innerHTML = `
                     <td style="padding: 10px; vertical-align: middle;">
                         <strong>${livro.titulo}</strong><br>
-                        <span style="font-size: 0.85em; color: #555;">Dono: ${donoEmail}</span>
+                        <span style="font-size: 0.85em; color: #555;">Dono: ${donoNome}</span>
                     </td>
-                    <td style="padding: 10px; display: flex; gap: 8px; justify-content: flex-start; align-items: center;">
+                    <td style="padding: 10px; display: flex; gap: 8px; justify-content: flex-start; align-items: middle;">
                         <button onclick="proporTroca('${livro.id}', '${donoId}')" class="btn-cadastro">Propor Troca</button>
                         <button onclick="solicitarDoacao('${livro.id}', '${donoId}')" class="button">Pedir Doação</button>
                         <button onclick="removerItem('${livro.id}')" class="btn-sair">Remover</button>

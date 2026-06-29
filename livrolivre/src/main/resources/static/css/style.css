@@ -97,6 +97,7 @@ button[type="submit"], button, .button {
     margin-bottom: 48px;
     text-align: center;
     display: inline;
+    cursor: pointer;
     justify-content: center;
     text-decoration: none;
     transition: background-color 0.5s ease, color 0.5s ease;
@@ -104,6 +105,7 @@ button[type="submit"], button, .button {
 
 button[type="submit"]:hover, button:hover, .button:hover {
     background-color: #EFEFEF;
+    cursor:pointer;
     color: var(--cor-texto-primario);
 }
 
@@ -125,6 +127,7 @@ button[type="cadastro"], .btn-cadastro, .adicionar-carrinho {
 
 button[type="cadastro"]:hover, .btn-cadastro:hover, .adicionar-carrinho:hover {
     background-color: var(--cor-confirm);
+    cursor:pointer;
     color: var(--cor-texto-primario);
 }
 
@@ -132,6 +135,7 @@ button[type="cadastro"]:hover, .btn-cadastro:hover, .adicionar-carrinho:hover {
     position: absolute;
     top: 20px;
     left: 20px;
+    cursor: pointer;
     text-decoration: none;
     color: #333;
     font-weight: bold;
@@ -142,6 +146,8 @@ button[type="cadastro"]:hover, .btn-cadastro:hover, .adicionar-carrinho:hover {
 
 .btn-retorno:hover {
     color: #007bff;
+    cursor: pointer;
+
 }
 
 button[type="sair"], .btn-sair {
@@ -150,6 +156,7 @@ button[type="sair"], .btn-sair {
     font-family: "Google Sans Flex", sans-serif;
     border: none;
     padding: 12px 12px;
+    cursor: pointer;
     border-radius: 15px;
     font-size: 16px;
     width: 150px;
@@ -161,6 +168,7 @@ button[type="sair"], .btn-sair {
 
 button[type="sair"]:hover, .btn-sair:hover {
     background-color: var(--cor-saida);
+    cursor: pointer;
     color: var(--cor-fundo);
 }
 

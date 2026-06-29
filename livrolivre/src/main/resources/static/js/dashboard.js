@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ofertasPendentes.forEach(oferta => {
                 const tr = document.createElement('tr');
 
-                const solicitanteEmail = oferta.solicitante ? oferta.solicitante.email : 'Anônimo';
+                const solicitanteNome = oferta.solicitante ? (oferta.solicitante.nome || oferta.solicitante.nomeUsuario || 'Anônimo') : 'Anônimo';
                 const livroSolicitadoTitulo = oferta.livroSolicitado ? oferta.livroSolicitado.titulo : '-';
 
                 let livroOferecidoTexto = '-';
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 tr.innerHTML = `
-                    <td>${solicitanteEmail}</td>
+                    <td>${solicitanteNome}</td>
                     <td>${livroSolicitadoTitulo}</td>
                     <td>${livroOferecidoTexto}</td>
                     <td>
@@ -205,14 +205,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     livroOferecidoTexto = transacao.livroOfertado.titulo;
                 }
 
-                const donoOriginalEmail = transacao.destinatario ? transacao.destinatario.email : 'Desconhecido';
+                const donoOriginalNome = transacao.destinatario ? (transacao.destinatario.nome || transacao.destinatario.nomeUsuario || 'Desconhecido') : 'Desconhecido';
                 const statusTexto = transacao.status === 'CONCLUIDA' ? '<span style="color: green; font-weight: bold;">Concluída</span>' : '<span style="color: red; font-weight: bold;">Cancelada</span>';
 
                 tr.innerHTML = `
                     <td>${tipoTexto}</td>
                     <td>${livreSolicitadoTitulo}</td>
                     <td>${livroOferecidoTexto}</td>
-                    <td>${donoOriginalEmail}</td>
+                    <td>${donoOriginalNome}</td>
                     <td>${statusTexto}</td>
                 `;
                 historicoBody.appendChild(tr);
