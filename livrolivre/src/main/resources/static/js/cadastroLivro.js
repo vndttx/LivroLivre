@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 alert('Livro cadastrado com sucesso!');
-                window.location.href = 'catalogo.html';
+                window.location.href = 'index.html';
             } else {
                 alert('Erro ao cadastrar livro.');
             }

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class Transacao {
     private String id;
     private Usuario solicitante;
+    private Usuario destinatario;
     private Usuario proprietario;
     private Livro livroSolicitado;
     private Livro livroOfertado;

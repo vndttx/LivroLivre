@@ -37,6 +37,15 @@ public class TransacaoController {
         }
     }
 
+    @GetMapping("/usuario/{usuarioId}/historico")
+    public ResponseEntity<List<Transacao>> buscarHistoricoUsuario(@PathVariable String usuarioId) {
+        try {
+            return ResponseEntity.ok(transacaoService.buscarHistoricoPorUsuario(usuarioId));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erro ao buscar histórico do usuário.", e);
+        }
+    }
+
     @PutMapping("/{id}/aceitar")
     public ResponseEntity<Transacao> aceitarTransacao(@PathVariable String id) {
         try {

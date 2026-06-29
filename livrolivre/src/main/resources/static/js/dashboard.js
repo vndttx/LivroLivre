@@ -48,6 +48,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return response;
     }
 
+    function atualizarBotaoPainel(quantidadeOfertas) {
+        const linkPainel = document.getElementById('link-painel');
+        if (linkPainel) {
+            if (quantidadeOfertas > 0) {
+                linkPainel.innerHTML = `Meu Painel (<span id="contador-painel">${quantidadeOfertas}</span>)`;
+            } else {
+                linkPainel.innerHTML = 'Meu Painel';
+            }
+        }
+    }
+
     async function carregarOfertas() {
         if (!ofertasBody) return;
         ofertasBody.innerHTML = '<tr><td colspan="4">Carregando ofertas...</td></tr>';
@@ -58,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ofertasBody.innerHTML = '';
 
             const ofertasPendentes = ofertas.filter(o => o.status === 'PENDENTE');
+            atualizarBotaoPainel(ofertasPendentes.length);
 
             if (ofertasPendentes.length === 0) {
                 ofertasBody.innerHTML = '<tr><td colspan="4">Nenhuma oferta recebida.</td></tr>';
@@ -69,15 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const solicitanteEmail = oferta.solicitante ? oferta.solicitante.email : 'Anônimo';
                 const livroSolicitadoTitulo = oferta.livroSolicitado ? oferta.livroSolicitado.titulo : '-';
-                const livroOferecidoTitulo = (oferta.tipo === 'TROCA' && oferta.livroOfertado) ? oferta.livroOfertado.titulo : '';
+
+                let livroOferecidoTexto = '-';
+                if (oferta.tipo === 'DOACAO') {
+                    livroOferecidoTexto = '<em>Nenhum (Doação)</em>';
+                } else if (oferta.livroOfertado) {
+                    livroOferecidoTexto = oferta.livroOfertado.titulo;
+                }
 
                 tr.innerHTML = `
                     <td>${solicitanteEmail}</td>
                     <td>${livroSolicitadoTitulo}</td>
-                    <td>${livroOferecidoTitulo}</td>
+                    <td>${livroOferecidoTexto}</td>
                     <td>
-                        <button class="btn-aceitar" data-id="${oferta.id}">Aceitar</button>
-                        <button class="btn-recusar" data-id="${oferta.id}">Recusar</button>
+                        <button class="btn-cadastro" data-id="${oferta.id}">Aceitar</button>
+                        <button class="btn-sair" data-id="${oferta.id}">Recusar</button>
                     </td>
                 `;
                 ofertasBody.appendChild(tr);
@@ -115,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${livro.autor}</td>
                     <td>${livro.genero || '-'}</td>
                     <td>${livro.estoque}</td>
-                    <td><button onclick="removerLivro('${livro.id}')" class="btn-remover">Remover</button></td>
+                    <td><button onclick="removerLivro('${livro.id}')" class="btn-sair">Remover</button></td>
                 `;
                 meusLivrosBody.appendChild(tr);
             });
@@ -132,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'DELETE'
             });
             if (response.ok) {
-                alert('Livro removedo com sucesso!');
+                alert('Livro removido com sucesso!');
                 carregarMeusLivros();
             } else {
                 alert('Erro ao remover livro.');
@@ -161,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         historicoBody.innerHTML = '<tr><td colspan="5">Carregando histórico...</td></tr>';
 
         try {
-            const response = await fetchWithAuth(`/api/transacoes/usuario/${usuarioId}`);
+            const response = await fetchWithAuth(`/api/transacoes/usuario/${usuarioId}/historico`);
             const transacoes = await response.json();
             historicoBody.innerHTML = '';
 
@@ -215,14 +233,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSair.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.clear();
-            alert("Voce saiu com sucesso.");
+            alert("Você saiu com sucesso.");
             window.location.href = 'login.html';
         });
     }
 
     document.addEventListener('click', async (e) => {
-        if (e.target.classList.contains('btn-aceitar')) {
+        if (e.target.classList.contains('btn-cadastro')) {
             const id = e.target.getAttribute('data-id');
+            if (!id) return;
             try {
                 const res = await fetchWithAuth(`/api/transacoes/${id}/aceitar`, { method: 'PUT' });
                 if (res.ok) {
@@ -233,8 +252,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) { alert('Erro ao processar aceite.'); }
         }
 
-        if (e.target.classList.contains('btn-recusar')) {
+        if (e.target.classList.contains('btn-sair') && e.target.hasAttribute('data-id')) {
             const id = e.target.getAttribute('data-id');
+            if (!id) return;
             try {
                 const res = await fetchWithAuth(`/api/transacoes/${id}/recusar`, { method: 'PUT' });
                 if (res.ok) {

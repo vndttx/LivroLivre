@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <strong>${livro.titulo}</strong><br>
                         <span style="font-size: 0.85em; color: #555;">Dono: ${donoEmail}</span>
                     </td>
-                    <td style="padding: 10px; display: flex; gap: 8px; justify-content: flex-start; align-items: middle;">
-                        <button onclick="proporTroca('${livro.id}', '${donoId}')" style="background-color: #2b6cb0; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Propor Troca</button>
-                        <button onclick="solicitarDoacao('${livro.id}', '${donoId}')" style="background-color: #2f855a; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Pedir Doação</button>
-                        <button onclick="removerItem('${livro.id}')" style="background-color: #c53030; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Remover</button>
+                    <td style="padding: 10px; display: flex; gap: 8px; justify-content: flex-start; align-items: center;">
+                        <button onclick="proporTroca('${livro.id}', '${donoId}')" class="btn-cadastro">Propor Troca</button>
+                        <button onclick="solicitarDoacao('${livro.id}', '${donoId}')" class="button">Pedir Doação</button>
+                        <button onclick="removerItem('${livro.id}')" class="btn-sair">Remover</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.proporTroca = async (livroSolicitadoId, destinatarioId) => {
         if (destinatarioId === usuarioId) {
-            alert('Você não pode propor uma troca para si mesmo.');
+            alert('Você não pode integrar uma proposta de troca consigo mesmo.');
             return;
         }
 
