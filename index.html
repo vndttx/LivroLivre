@@ -3,16 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LivroLivre - Apresentação</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Sobre o Projeto - LivroLivre</title>
+    <style>
+        :root {
+            --cor-fundo: #F2F6FC;
+            --cor-superficie: #F9FDFE;
+            --cor-primaria: #020D19;
+            --cor-texto-primario: #020D19;
+            --cor-texto-secundario: #555555;
+            --cor-borda: #EFEFEF;
+            --cor-confirm: #30dd20;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Google Sans Flex", "Segoe UI", Segoe UI, sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto-primario);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 32px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--cor-superficie);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            text-align: center;
+            border-bottom: 2px solid var(--cor-borda);
+            padding-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--cor-texto-secundario);
+            margin-bottom: 16px;
+            text-align: justify;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            color: var(--cor-texto-secundario);
+            font-size: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .cta-container {
+            text-align: center;
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid var(--cor-borda);
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--cor-primaria);
+            color: var(--cor-superficie);
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: opacity 0.2s ease;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .badge-tecnologia {
+            display: inline-block;
+            background-color: var(--cor-fundo);
+            color: var(--cor-primaria);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 8px;
+            border: 1px solid var(--cor-borda);
+        }
+    </style>
 </head>
 <body>
+
 <div class="container">
-    <h1>Bem-vindo ao OpenLib</h1>
-    <nav class="menu-principal">
-        <a href="https://github.com/vndttx/LivroLivre" class="btn">Código fonte e documentação técnica do projeto</a>
-        <a href="https://livrolivre.onrender.com/" class="btn">Projeto rodando em prod</a>
-    </nav>
+    <h1>Projeto LivroLivre</h1>
+    
+    <p>O <strong>LivroLivre</strong> é uma plataforma web voltada para a extensão universitária que visa incentivar a leitura e a circulação de conhecimento por meio de um sistema colaborativo de trocas e doações de livros. A plataforma permite que os usuários gerenciem seus acervos pessoais e realizem transações de maneira rápida, segura e transparente.</p>
+
+    <h2>Funcionalidades Principais</h2>
+    <ul>
+        <li><strong>Catálogo de Obras:</strong> Visualização de livros disponíveis na comunidade com detalhes sobre o título, autor, gênero e identificação do proprietário.</li>
+        <li><strong>Carrinho de Interações:</strong> Gerenciamento dinâmico de itens de interesse antes da consolidação de propostas de circulação.</li>
+        <li><strong>Propostas de Troca:</strong> Fluxo integrado para oferta recíproca de títulos baseada na disponibilidade em tempo real dos acervos dos usuários.</li>
+        <li><strong>Solicitações de Doação:</strong> Pedidos diretos de volumes disponíveis sem a necessidade de contrapartida de acervo.</li>
+        <li><strong>Painel de Controle (Dashboard):</strong> Gestão centralizada de livros cadastrados, acompanhamento de ofertas pendentes com contadores em tempo real e histórico completo de transações concluídas ou canceladas.</li>
+        <li><strong>Atualização Automatizada de Estoque:</strong> Dedução automática e controle estrito de quantidades disponíveis imediatamente após o aceite de transações.</li>
+        <li><strong>Proteção de Dados:</strong> Mascaramento estrito de informações sensíveis, exibindo apenas identificadores de usabilidade pública para preservar a segurança dos participantes.</li>
+    </ul>
+
+    <h2>Tecnologias Utilizadas</h2>
+    <div style="margin-top: 8px;">
+        <span class="badge-tecnologia">Java</span>
+        <span class="badge-tecnologia">Spring Boot</span>
+        <span class="badge-tecnologia">Spring Security & JWT</span>
+        <span class="badge-tecnologia">Google Cloud Firestore</span>
+        <span class="badge-tecnologia">JavaScript (ES6+)</span>
+        <span class="badge-tecnologia">HTML5 & CSS3</span>
+    </div>
+
+    <div class="cta-container">
+        <a href="https://livrolivre.onrender.com/login.html" target="_blank" class="button">Acessar Aplicação Online</a>
+    </div>
+    <div class="cta-container">
+        <a href="https://github.com/vndttx/LivroLivre" target="_blank" class="button">Código fonte do projeto</a>
+    </div>
 </div>
+
 </body>
 </html>
